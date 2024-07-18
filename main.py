@@ -34,5 +34,10 @@ async def reloading(ctx : commands.Context, *, module : str):
     else:
         await ctx.send(f'\N{OK HAND SIGN} {module}')
 
+@bot.command(name="ping")
+async def ping(ctx : commands.Context) -> discord.Message :
+    "Sends the bot delay"
+    return await ctx.send(f"🏓 Pong ! with {round(bot.latency, 3)*1000} ms !")
+
 if __name__ == "__main__":
     bot.run(Token.Token)
