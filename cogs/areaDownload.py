@@ -247,6 +247,7 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 
+# Slash Command
 @app_commands.command(name = "downloadarea", description = "Sends the pixelya map between two coordinates in a file.")
 @app_commands.describe(maps = "Map from which you want to download the image")
 @app_commands.choices(maps=[
