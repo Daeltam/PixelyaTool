@@ -4,6 +4,7 @@ import discord
 import Token
 from enum import Enum
 from discord.ext import commands
+discord.utils.setup_logging()
 
 class Bot(commands.Bot):
     async def setup_hook(self):
