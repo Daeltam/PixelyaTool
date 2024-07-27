@@ -7,8 +7,8 @@ import sys, os, io, math
 import asyncio
 import aiohttp
 
-USER_AGENT = "pyf areaDownload 1.0 " + ' '.join(sys.argv[1:])
-PYF_URL = "https://pixelya.fun"
+# USER_AGENT = "pyf areaDownload 1.0 " + ' '.join(sys.argv[1:])
+# PYF_URL = "https://pixelya.fun"
 
 class Color(object):
     def __init__(self, index, rgb):
@@ -55,7 +55,7 @@ class Matrix:
             self.width = max(end_x_b, end_x_a) - self.start_x
             self.height = max(end_y_b, end_y_a) - self.start_y
 
-    def create_image(self, filename = None):
+    async def create_image(self, filename = None):
         img = PIL.Image.new('RGBA', (self.width, self.height), (255, 0, 0, 0))
         pxls = img.load()
         for x in range(self.width):
@@ -65,17 +65,22 @@ class Matrix:
                     pxls[x, y] = color
                 except (IndexError, KeyError, AttributeError):
                     pass
-        if filename is not None:
-          if filename == 'b':
-            b = io.BytesIO()
-            img.save(b, "PNG")
-            b.seek(0)
-            return b
-          else:
-            img.save(filename)
-        else:
-            img.show()
-        img.close()
+        # Trying to make this work differently
+        # if filename is not None: 
+        #   if filename == 'b':
+        #     b = io.BytesIO()
+        #     img.save(b, "PNG")
+        #     b.seek(0)
+        #     return b
+        #   else:
+        #     img.save(filename)
+        # else:
+        #     img.show()
+        # img.close()
+        with io.BytesIO() as image_binary:
+            img.save(image_binary, 'PNG')
+            img.seek(0)
+            return img 
 
     def set_pixel(self, x, y, color):
         if x >= self.start_x and x < (self.start_x + self.width) and y >= self.start_y and y < (self.start_y + self.height):
@@ -204,8 +209,10 @@ def validateCoorRange(ulcoor: str, brcoor: str, canvasSize: int):
     return (x, y, u, v)
 
 async def main():
-    apime = await fetchMe()
-
+    """to be rewritten"""
+    # apime = await fetchMe()
+    # former warning message, to be added as a description :
+    Description = """
     if len(sys.argv) != 5:
         print("Download an area of pixelya")
         print("Usage: areaDownload.py canvasID startX_startY endX_endY filename.png")
@@ -216,39 +223,46 @@ async def main():
                 continue
             print(f"{canvas_id} = {canvas['title']}", end=', ')
         print()
-        return
+        return"""
 
-    canvas_id = sys.argv[1]
+    # canvas_id = sys.argv[1]
 
-    if canvas_id not in apime['canvases']:
-        print("Invalid canvas selected")
-        return
+    # if canvas_id not in apime['canvases']:
+    #     print("Invalid canvas selected")
+    #     return
 
-    canvas = apime['canvases'][canvas_id]
+    # canvas = apime['canvases'][canvas_id]
 
-    parseCoords = validateCoorRange(sys.argv[2], sys.argv[3], canvas['size'])
+    # parseCoords = validateCoorRange(sys.argv[2], sys.argv[3], canvas['size'])
 
-    if (type(parseCoords) is str):
-        print(parseCoords)
-        sys.exit()
-    else:
-        x, y, w, h = parseCoords
-        w = w - x + 1
-        h = h - y + 1
+    # if (type(parseCoords) is str):
+    #     print(parseCoords)
+    #     sys.exit()
+    # else:
+    #     x, y, w, h = parseCoords
+    #     w = w - x + 1
+    #     h = h - y + 1
 
-    EnumColorPixelya.getColors(canvas)
-    filename = sys.argv[4]
+    # EnumColorPixelya.getColors(canvas)
+    # filename = sys.argv[4] (Useless)
 
-    matrix = await get_area(canvas_id, canvas, x, y, w, h)
-    print("Saving image ...")
-    matrix.create_image('./output/'+filename)
-    print("Done! you can find your image on the output folder.")
+    # matrix = await get_area(canvas_id, canvas, x, y, w, h)
+    # print("Saving image ...")
+    # matrix.create_image('./output/'+filename)
+    # print("Done! you can find your image on the output folder.")
 
 if __name__ == "__main__":
     asyncio.run(main())
 
 # Slash Command
-@app_commands.command(name = "downloadarea", description = "Sends the pixelya map between two coordinates in a file.")
+group = app_commands.Group(name="area", description="Area Download related commands")
+
+@group.command(name = "infos", description = r"Information on how to use `/area download`")
+async def info_area_download(interaction : discord.Interaction):
+    # will send an embed explaining how download area works
+    pass
+
+@group.command(name = "download", description = "Sends the pixelya map between two coordinates in a file.")
 @app_commands.describe(maps = "Map from which you want to download the image")
 @app_commands.choices(maps=[
     app_commands.Choice(name="MiniWorld", value=1),
@@ -256,6 +270,32 @@ if __name__ == "__main__":
     app_commands.Choice(name="MainWorld", value=4),
     ])
 async def download_area(interaction : discord.Interaction, maps : app_commands.Choice[int], startx_starty : str, endx_endy : str):
-    # canvasID is value of maps
     print("downloadArea called")
-    return await interaction.response.send_message(f"{maps.name} and {maps.value}, {startx_starty} and {endx_endy}")
+    global USER_AGENT 
+    USER_AGENT = "pyf areaDownload 1.0 " + maps.name + " " + startx_starty + " " + endx_endy
+    global PYF_URL 
+    PYF_URL = "https://pixelya.fun"
+    apime = await fetchMe()
+    canvas_id = maps.value
+
+    if canvas_id not in apime['canvases']:
+        return interaction.response.send_message("Invalid canvas selected")
+    canvas = apime['canvases'][canvas_id]
+
+    parseCoords = validateCoorRange(startx_starty, endx_endy, canvas['size'])
+    if (type(parseCoords) is str):
+        return interaction.response.send_message(parseCoords)
+    else:
+        x, y, w, h = parseCoords
+        w = w - x + 1
+        h = h - y + 1
+
+    EnumColorPixelya.getColors(canvas)
+
+    matrix = await get_area(canvas_id, canvas, x, y, w, h)
+    # ENVOYER PROGRESS BY EDITING MESSAGE
+    matrix.create_image()  # './output/'+filename) (filename should be optional if i read well)
+
+    image = matrix.create_image # send PIL image
+    # A completer avec main()
+    return await interaction.response.send_message(f"Your image is ready :", file = discord.File(fp=image, filename = "result.png"))
