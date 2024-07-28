@@ -6,6 +6,8 @@ import PIL.Image
 import sys, os, io, math
 import asyncio
 import aiohttp
+import nest_asyncio
+nest_asyncio.apply()
 
 # USER_AGENT = "pyf areaDownload 1.0 " + ' '.join(sys.argv[1:])
 # PYF_URL = "https://pixelya.fun"
@@ -255,47 +257,58 @@ if __name__ == "__main__":
     asyncio.run(main())
 
 # Slash Command
-group = app_commands.Group(name="area", description="Area Download related commands")
+class areaDownload(commands.Cog):
+    def __init__(self, bot : commands.Bot) -> None:
+        self.bot = bot
 
-@group.command(name = "infos", description = r"Information on how to use `/area download`")
-async def info_area_download(interaction : discord.Interaction):
-    # will send an embed explaining how download area works
-    pass
+    @commands.Cog.listener(name="on_ready")
+    async def CogLoaded(self) -> None:
+        return print("Admin Commands Cog loaded")
+    
+    group = app_commands.Group(name="area", description="Area Download related commands")
 
-@group.command(name = "download", description = "Sends the pixelya map between two coordinates in a file.")
-@app_commands.describe(maps = "Map from which you want to download the image")
-@app_commands.choices(maps=[
-    app_commands.Choice(name="MiniWorld", value=1),
-    app_commands.Choice(name="Graffiti", value=2),
-    app_commands.Choice(name="MainWorld", value=4),
-    ])
-async def download_area(interaction : discord.Interaction, maps : app_commands.Choice[int], startx_starty : str, endx_endy : str):
-    print("downloadArea called")
-    global USER_AGENT 
-    USER_AGENT = "pyf areaDownload 1.0 " + maps.name + " " + startx_starty + " " + endx_endy
-    global PYF_URL 
-    PYF_URL = "https://pixelya.fun"
-    apime = await fetchMe()
-    canvas_id = maps.value
+    @group.command(name = "infos", description = r"Information on how to use `/area download`")
+    async def info_area_download(self, interaction : discord.Interaction):
+        # will send an embed explaining how download area works
+        pass
 
-    if canvas_id not in apime['canvases']:
-        return interaction.response.send_message("Invalid canvas selected")
-    canvas = apime['canvases'][canvas_id]
+    @group.command(name = "download", description = "Sends the pixelya map between two coordinates in a file.")
+    @app_commands.describe(maps = "Map from which you want to download the image")
+    @app_commands.choices(maps=[
+        app_commands.Choice(name="MiniWorld", value=1),
+        app_commands.Choice(name="Graffiti", value=2),
+        app_commands.Choice(name="MainWorld", value=4),
+        ])
+    async def download_area(self, interaction : discord.Interaction, maps : app_commands.Choice[int], startx_starty : str, endx_endy : str):
+        print("downloadArea called")
+        global USER_AGENT 
+        USER_AGENT = "pyf areaDownload 1.0 " + maps.name + " " + startx_starty + " " + endx_endy
+        global PYF_URL 
+        PYF_URL = "https://pixelya.fun"
+        apime = await fetchMe()
+        canvas_id = maps.value
 
-    parseCoords = validateCoorRange(startx_starty, endx_endy, canvas['size'])
-    if (type(parseCoords) is str):
-        return interaction.response.send_message(parseCoords)
-    else:
-        x, y, w, h = parseCoords
-        w = w - x + 1
-        h = h - y + 1
+        if canvas_id not in apime['canvases']:
+            return interaction.response.send_message("Invalid canvas selected")
+        canvas = apime['canvases'][canvas_id]
 
-    EnumColorPixelya.getColors(canvas)
+        parseCoords = validateCoorRange(startx_starty, endx_endy, canvas['size'])
+        if (type(parseCoords) is str):
+            return interaction.response.send_message(parseCoords)
+        else:
+            x, y, w, h = parseCoords
+            w = w - x + 1
+            h = h - y + 1
 
-    matrix = await get_area(canvas_id, canvas, x, y, w, h)
-    # ENVOYER PROGRESS BY EDITING MESSAGE
-    matrix.create_image()  # './output/'+filename) (filename should be optional if i read well)
+        EnumColorPixelya.getColors(canvas)
 
-    image = matrix.create_image # send PIL image
-    # A completer avec main()
-    return await interaction.response.send_message(f"Your image is ready :", file = discord.File(fp=image, filename = "result.png"))
+        matrix = await get_area(canvas_id, canvas, x, y, w, h)
+        # ENVOYER PROGRESS BY EDITING MESSAGE
+        matrix.create_image()  # './output/'+filename) (filename should be optional if i read well)
+
+        image = matrix.create_image # send PIL image
+        # A completer avec main()
+        return await interaction.response.send_message(f"Your image is ready :", file = discord.File(fp=image, filename = "result.png"))
+
+async def setup(bot):
+    await bot.add_cog(areaDownload(bot))
