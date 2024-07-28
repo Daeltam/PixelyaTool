@@ -43,7 +43,7 @@ class AdminCommands(commands.Cog):
                 synced = await ctx.bot.tree.sync()
 
             await ctx.send(
-                f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild :'} {synced}"
+                f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild :'} /{synced[0].name} command"
             )
             return
 
