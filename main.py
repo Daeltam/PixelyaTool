@@ -10,8 +10,8 @@ class Bot(commands.Bot):
     async def setup_hook(self):
         print(f"Logged in as: {self.user}")
         # Load extensions here
-        await self.load_extensions()
-bot = Bot(command_prefix="!", intents= discord.Intents.all(), status = "Running to help you")
+        await load()
+bot = Bot(command_prefix="pyd ", intents= discord.Intents.all(), status = "Running to help you")
 
 async def load():
     for filename in os.listdir(r"D:\Perso\Programmation\Discord_Bot\PyfDownloadTool\cogs"):
