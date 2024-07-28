@@ -7,6 +7,7 @@ import sys, os, io, math
 import asyncio
 import aiohttp
 import nest_asyncio, datetime
+from enum import Enum
 nest_asyncio.apply()
 
 # USER_AGENT = "pyf areaDownload 1.0 " + ' '.join(sys.argv[1:])
@@ -169,6 +170,7 @@ async def get_area(canvas_id, canvas, x, y, w, h):
         for iy in range(yc, hc + 1):
             for ix in range(xc, wc + 1):
                 tasks.append(fetch(session, canvas_id, canvasoffset, ix, iy, target_matrix))
+# LOOP IS HERE CMON PERCENTAGE
         await asyncio.gather(*tasks)
         return target_matrix
 
@@ -269,6 +271,18 @@ class areaDownload(commands.Cog):
     
     group = app_commands.Group(name="area", description="Area Download related commands")
 
+    canvas = {'Mini World': '0', 'Graffiti': '1', 'Football': '2', 'World': '5', 'Top 15': '6'}
+    @group.command(name = "refresh", description = "Refresh canvases options for the commands")
+    @commands.has_permissions(administrator=True)    
+    async def refreshing_canvas_list(self, interaction : discord.Interaction):
+        print(f"{interaction.user} has reloaded the canvas list")
+        apime = await fetchMe()
+        canvases = apime['canvases'].items()
+        global canvas
+        canvas = { can[1]['title'] :can[0]  for can in canvases}
+        print(canvas)
+        return await interaction.response.send_message(f"Canvases list has been updated : {canvas}")
+
     @group.command(name = "infos", description = r"Information on how to use `/area download`")
     async def info_area_download(self, interaction : discord.Interaction):
         print(f"information comment send by {interaction.user}")
@@ -281,9 +295,12 @@ class areaDownload(commands.Cog):
             color=discord.Color.from_rgb(173, 233, 230),
             timestamp=datetime.datetime.now(datetime.UTC)
         )
+        global canvas
         canvases = apime['canvases'].items()
-        informations.add_field(name="Canvas", value=f"Here are the available canvases : {"; ".join([canvas[1]['title'] for canvas in canvases])}, with for respective IDs : {[canvas[0] for canvas in canvases]}", inline=False)
-
+        informations.add_field(name="Canvas", value=f"Here are the available canvases : {" ; ".join(self.canvas.keys())}", inline = False)
+        print(type(self.canvas.values()))
+        mapsEnum = Enum('maps', self.canvas)
+        print(mapsEnum)
         informations.add_field(name="Coordinates", value = "Use `R` key in the canvas to pick coordinates. You need the Upper left corner (startx_starty) and the bottom right corner (endx_endy)", inline = False)
 
         informations.add_field(name = "Result", value = "The bot will send you the result. If it doesn't work and you have made no mistakes, please make a but report in the dedicated thread of this channel", inline = False)
@@ -294,14 +311,10 @@ class areaDownload(commands.Cog):
 
         return await interaction.response.send_message(embed=informations)
 
+    mapsEnum = Enum('maps', canvas)
     @group.command(name = "download", description = "Sends the pixelya map between two coordinates in a file.")
     @app_commands.describe(maps = "Map from which you want to download the image")
-    @app_commands.choices(maps=[
-        app_commands.Choice(name="MiniWorld", value=1),
-        app_commands.Choice(name="Graffiti", value=2),
-        app_commands.Choice(name="MainWorld", value=4),
-        ])
-    async def download_area(self, interaction : discord.Interaction, maps : app_commands.Choice[int], startx_starty : str, endx_endy : str):
+    async def download_area(self, interaction : discord.Interaction, maps : mapsEnum, startx_starty : str, endx_endy : str):
         global USER_AGENT
         USER_AGENT = "pyf areaDownload 1.0 " + maps.value + " " + startx_starty + " " + endx_endy
         print("downloadArea called")
@@ -326,7 +339,7 @@ class areaDownload(commands.Cog):
         # ENVOYER PROGRESS BY EDITING MESSAGE
         matrix.create_image()  # './output/'+filename) (filename should be optional if i read well)
 
-        image = matrix.create_image # send PIL image
+        image = matrix.create_image() # send PIL image
         # A completer avec main()
         return await interaction.response.send_message(f"👌 Your image is ready :", file = discord.File(fp=image, filename = "result.png"))
 
