@@ -11,6 +11,10 @@ nest_asyncio.apply()
 
 # USER_AGENT = "pyf areaDownload 1.0 " + ' '.join(sys.argv[1:])
 # PYF_URL = "https://pixelya.fun"
+# GLOBAL TO BE DEFINED
+
+USER_AGENT = "pyf areaDownload 1.0 0 -1_-1 1_1"
+PYF_URL = "https://pixelya.fun"
 
 class Color(object):
     def __init__(self, index, rgb):
@@ -112,7 +116,6 @@ async def fetchMe():
                 pass
 
 async def fetch(session, canvas_id, canvasoffset, ix, iy, target_matrix):
-
     url = f"{PYF_URL}/chunks/{canvas_id}/{ix}/{iy}.bmp"
     headers = {
       'User-Agent': USER_AGENT
@@ -152,7 +155,6 @@ async def fetch(session, canvas_id, canvasoffset, ix, iy, target_matrix):
             pass
 
 async def get_area(canvas_id, canvas, x, y, w, h):
-
     target_matrix = Matrix()
     target_matrix.add_coords(x, y, w, h)
     canvasoffset = math.pow(canvas['size'], 0.5)
@@ -269,7 +271,7 @@ class areaDownload(commands.Cog):
 
     @group.command(name = "infos", description = r"Information on how to use `/area download`")
     async def info_area_download(self, interaction : discord.Interaction):
-        print(f"information comment send by {interaction.author}")
+        print(f"information comment send by {interaction.user}")
         apime = await fetchMe()
         # will send an embed explaining how download area works
         informations = discord.Embed(
@@ -279,8 +281,8 @@ class areaDownload(commands.Cog):
             color=discord.Color.from_rgb(173, 233, 230),
             timestamp=datetime.datetime.now(datetime.UTC)
         )
-        canvases = apime['canvases'].items()[1]
-        informations.add_field(name="Canvas", value=f"Here are the available canvases : {[canvas['title'] for canvas in canvases]}", inline=False)
+        canvases = apime['canvases'].items()
+        informations.add_field(name="Canvas", value=f"Here are the available canvases : {"; ".join([canvas[1]['title'] for canvas in canvases])}, with for respective IDs : {[canvas[0] for canvas in canvases]}", inline=False)
 
         informations.add_field(name="Coordinates", value = "Use `R` key in the canvas to pick coordinates. You need the Upper left corner (startx_starty) and the bottom right corner (endx_endy)", inline = False)
 
@@ -300,11 +302,9 @@ class areaDownload(commands.Cog):
         app_commands.Choice(name="MainWorld", value=4),
         ])
     async def download_area(self, interaction : discord.Interaction, maps : app_commands.Choice[int], startx_starty : str, endx_endy : str):
+        global USER_AGENT
+        USER_AGENT = "pyf areaDownload 1.0 " + maps.value + " " + startx_starty + " " + endx_endy
         print("downloadArea called")
-        global USER_AGENT 
-        USER_AGENT = "pyf areaDownload 1.0 " + maps.name + " " + startx_starty + " " + endx_endy
-        global PYF_URL 
-        PYF_URL = "https://pixelya.fun"
         apime = await fetchMe()
         canvas_id = maps.value
 
