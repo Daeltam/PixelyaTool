@@ -6,7 +6,7 @@ import PIL.Image
 import sys, os, io, math
 import asyncio
 import aiohttp
-import nest_asyncio
+import nest_asyncio, datetime
 nest_asyncio.apply()
 
 # USER_AGENT = "pyf areaDownload 1.0 " + ' '.join(sys.argv[1:])
@@ -263,14 +263,34 @@ class areaDownload(commands.Cog):
 
     @commands.Cog.listener(name="on_ready")
     async def CogLoaded(self) -> None:
-        return print("Admin Commands Cog loaded")
+        return print("areaDownload Cog loaded")
     
     group = app_commands.Group(name="area", description="Area Download related commands")
 
     @group.command(name = "infos", description = r"Information on how to use `/area download`")
     async def info_area_download(self, interaction : discord.Interaction):
+        print(f"information comment send by {interaction.author}")
+        apime = await fetchMe()
         # will send an embed explaining how download area works
-        pass
+        informations = discord.Embed(
+            title="Download an area of pixelya",
+            description="Here is an explaination on how to use this command without making the bot sending an error message :",
+            url="https://www.pixelya.fun",
+            color=discord.Color.from_rgb(173, 233, 230),
+            timestamp=datetime.datetime.now(datetime.UTC)
+        )
+        canvases = apime['canvases'].items()[1]
+        informations.add_field(name="Canvas", value=f"Here are the available canvases : {[canvas['title'] for canvas in canvases]}", inline=False)
+
+        informations.add_field(name="Coordinates", value = "Use `R` key in the canvas to pick coordinates. You need the Upper left corner (startx_starty) and the bottom right corner (endx_endy)", inline = False)
+
+        informations.add_field(name = "Result", value = "The bot will send you the result. If it doesn't work and you have made no mistakes, please make a but report in the dedicated thread of this channel", inline = False)
+
+        informations.set_author(name=self.bot.user.display_name, url = "https://github.com/Daeltam/PyfDownloadTool", icon_url=self.bot.user.avatar)
+
+        informations.set_footer(text = "Informations about /area Download")
+
+        return await interaction.response.send_message(embed=informations)
 
     @group.command(name = "download", description = "Sends the pixelya map between two coordinates in a file.")
     @app_commands.describe(maps = "Map from which you want to download the image")
@@ -289,12 +309,12 @@ class areaDownload(commands.Cog):
         canvas_id = maps.value
 
         if canvas_id not in apime['canvases']:
-            return interaction.response.send_message("Invalid canvas selected")
+            return await interaction.response.send_message("❌ Invalid canvas selected")
         canvas = apime['canvases'][canvas_id]
 
         parseCoords = validateCoorRange(startx_starty, endx_endy, canvas['size'])
         if (type(parseCoords) is str):
-            return interaction.response.send_message(parseCoords)
+            return await interaction.response.send_message(parseCoords)
         else:
             x, y, w, h = parseCoords
             w = w - x + 1
@@ -308,7 +328,7 @@ class areaDownload(commands.Cog):
 
         image = matrix.create_image # send PIL image
         # A completer avec main()
-        return await interaction.response.send_message(f"Your image is ready :", file = discord.File(fp=image, filename = "result.png"))
+        return await interaction.response.send_message(f"👌 Your image is ready :", file = discord.File(fp=image, filename = "result.png"))
 
 async def setup(bot):
     await bot.add_cog(areaDownload(bot))
