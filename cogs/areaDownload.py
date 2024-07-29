@@ -162,8 +162,8 @@ async def get_area(canvas_id, canvas, x, y, w, h, interaction : discord.Interact
                 tasks.append(fetch(session, canvas_id, canvasoffset, ix, iy, target_matrix))
                 rank += 1
                 percentage = (rank/total)*100
-                await interaction.edit_original_response(content = f"Image processing : {percentage}% done.")
-# LOOP IS HERE CMON PERCENTAGE
+                percentageBar = "".join(['🟩' for k in range(round(percentage/5))]+['🟫' for k in range(20-round(percentage/5))])
+                await interaction.edit_original_response(content = f"Image processing {percentageBar}") # : {percentage}% done.")
         await asyncio.gather(*tasks)
         return target_matrix
 
