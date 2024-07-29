@@ -11,7 +11,7 @@ class Bot(commands.Bot):
         print(f"Logged in as: {self.user}")
         # Load extensions here
         await load()
-bot = Bot(command_prefix="pyd ", intents= discord.Intents.all(), status = "Running to help you")
+bot = Bot(command_prefix="pyd ", intents= discord.Intents.all(), activity=discord.Activity(type=discord.ActivityType.listening, name="to your commands"))
 
 async def load():
     for filename in os.listdir(r"D:\Perso\Programmation\Discord_Bot\PyfDownloadTool\cogs"):
