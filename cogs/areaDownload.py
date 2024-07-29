@@ -207,52 +207,6 @@ def validateCoorRange(ulcoor: str, brcoor: str, canvasSize: int):
     
     return (x, y, u, v)
 
-async def main():
-    """to be rewritten"""
-    # apime = await fetchMe()
-    # former warning message, to be added as a description :
-    Description = """
-    if len(sys.argv) != 5:
-        print("Download an area of pixelya")
-        print("Usage: areaDownload.py canvasID startX_startY endX_endY filename.png")
-        print("(use R key on pixelya to copy coordinates)")
-        print("canvasID: ", end='')
-        for canvas_id, canvas in apime['canvases'].items():
-            if 'v' in canvas and canvas['v']:
-                continue
-            print(f"{canvas_id} = {canvas['title']}", end=', ')
-        print()
-        return"""
-
-    # canvas_id = sys.argv[1]
-
-    # if canvas_id not in apime['canvases']:
-    #     print("Invalid canvas selected")
-    #     return
-
-    # canvas = apime['canvases'][canvas_id]
-
-    # parseCoords = validateCoorRange(sys.argv[2], sys.argv[3], canvas['size'])
-
-    # if (type(parseCoords) is str):
-    #     print(parseCoords)
-    #     sys.exit()
-    # else:
-    #     x, y, w, h = parseCoords
-    #     w = w - x + 1
-    #     h = h - y + 1
-
-    # EnumColorPixelya.getColors(canvas)
-    # filename = sys.argv[4] (Useless)
-
-    # matrix = await get_area(canvas_id, canvas, x, y, w, h)
-    # print("Saving image ...")
-    # matrix.create_image('./output/'+filename)
-    # print("Done! you can find your image on the output folder.")
-
-if __name__ == "__main__":
-    asyncio.run(main())
-
 # Slash Command
 class areaDownload(commands.Cog):
     def __init__(self, bot : commands.Bot) -> None:
