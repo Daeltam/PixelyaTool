@@ -23,12 +23,17 @@ async def load():
 async def reloading(ctx : commands.Context, *, module : str):
     """Reloads a module"""
     print(f"trying to reload {module}")
-    if module + ".py" not in os.listdir(r"D:\Perso\Programmation\Discord_Bot\PyfDownloadTool\cogs"):
+    if (module + ".py" not in os.listdir(r"D:\Perso\Programmation\Discord_Bot\PyfDownloadTool\cogs")) and module != " all " :
         await ctx.send(f"This module doesn't exist, here is the list of modules : {os.listdir(r"D:\Perso\Programmation\Discord_Bot\PyfDownloadTool\cogs")}")
     try:
-        # await bot.reload_extension(module)
-        await bot.unload_extension("cogs." +module)
-        await bot.load_extension("cogs."+ module)
+        if module == "all" :
+            for file in os.listdir(r"D:\Perso\Programmation\Discord_Bot\PyfDownloadTool\cogs") :
+                await bot.unload_extension("cogs." +file)
+                await bot.load_extension("cogs."+ file)
+        else :
+            # await bot.reload_extension(module)
+            await bot.unload_extension("cogs." +module)
+            await bot.load_extension("cogs."+ module)
     except Exception as e:
         await ctx.send('\N{PISTOL}')
         await ctx.send('{}: {}'.format(type(e).__name__, e))
