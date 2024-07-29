@@ -265,9 +265,10 @@ class areaDownload(commands.Cog):
     group = app_commands.Group(name="area", description="Area Download related commands")
 
     canvas = {'Mini World': '0', 'Graffiti': '1', 'Football': '2', 'World': '5', 'Top 15': '6'}
-    @group.command(name = "refresh", description = "Refresh canvases options for the commands")
-    @commands.has_permissions(administrator=True)    
+    @group.command(name = "refresh", description = "Refresh canvases options for the commands")  
     async def refreshing_canvas_list(self, interaction : discord.Interaction):
+        if not interaction.user.guild_permissions.administrator :
+            return await interaction.response.send_message("You do not have the permissions to use this command")
         print(f"{interaction.user} has reloaded the canvas list")
         apime = await fetchMe()
         canvases = apime['canvases'].items()
@@ -310,7 +311,7 @@ class areaDownload(commands.Cog):
     async def download_area(self, interaction : discord.Interaction, maps : mapsEnum, startx_starty : str, endx_endy : str):
         global USER_AGENT
         USER_AGENT = "pyf areaDownload 1.0 " + maps.value + " " + startx_starty + " " + endx_endy
-        print("downloadArea called")
+        print(f"downloadArea called by {interaction.user}")
         await interaction.response.send_message("Your image is being processed, please wait")
         apime = await fetchMe()
         canvas_id = maps.value
