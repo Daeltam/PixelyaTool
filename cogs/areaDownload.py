@@ -10,9 +10,6 @@ import nest_asyncio, datetime
 from enum import Enum
 nest_asyncio.apply()
 
-# USER_AGENT = "pyf areaDownload 1.0 " + ' '.join(sys.argv[1:])
-# PYF_URL = "https://pixelya.fun"
-# GLOBAL TO BE DEFINED
 
 USER_AGENT = "pyf areaDownload 1.0 0 -1_-1 1_1"
 PYF_URL = "https://pixelya.fun"
@@ -163,7 +160,7 @@ async def get_area(canvas_id, canvas, x, y, w, h, interaction : discord.Interact
                 rank += 1
                 percentage = (rank/total)*100
                 percentageBar = "".join(['🟩' for k in range(round(percentage/5))]+['🟫' for k in range(20-round(percentage/5))])
-                await interaction.edit_original_response(content = f"Image processing {percentageBar}") # : {percentage}% done.")
+                await interaction.edit_original_response(content = f"\:loading: Image processing {percentageBar}")  # : {percentage}% done.")
         await asyncio.gather(*tasks)
         return target_matrix
 
@@ -267,28 +264,31 @@ class areaDownload(commands.Cog):
         USER_AGENT = "pyf areaDownload 1.0 " + maps.value + " " + startx_starty + " " + endx_endy
         print(f"downloadArea called by {interaction.user}")
         await interaction.response.send_message("Your image is being processed, please wait")
-        apime = await fetchMe()
-        canvas_id = maps.value
+        try : 
+            apime = await fetchMe()
+            canvas_id = maps.value
 
-        if canvas_id not in apime['canvases']:
-            return await interaction.response.send_message("❌ Invalid canvas selected")
-        canvas_infos = apime['canvases'][canvas_id]
+            if canvas_id not in apime['canvases']:
+                return await interaction.response.send_message("❌ Invalid canvas selected")
+            canvas_infos = apime['canvases'][canvas_id]
 
-        parseCoords = validateCoorRange(startx_starty, endx_endy, canvas_infos['size'])
-        if (type(parseCoords) is str):
-            return await interaction.response.send_message(parseCoords)
-        else:
-            x, y, w, h = parseCoords
-            w = w - x + 1
-            h = h - y + 1
+            parseCoords = validateCoorRange(startx_starty, endx_endy, canvas_infos['size'])
+            if (type(parseCoords) is str):
+                return await interaction.response.send_message(parseCoords)
+            else:
+                x, y, w, h = parseCoords
+                w = w - x + 1
+                h = h - y + 1
 
-        EnumColorPixelya.getColors(canvas_infos)
+            EnumColorPixelya.getColors(canvas_infos)
 
-        matrix = await get_area(canvas_id, canvas_infos, x, y, w, h, interaction)
+            matrix = await get_area(canvas_id, canvas_infos, x, y, w, h, interaction)
 
-        image = await matrix.create_image() # send PIL image
-        await interaction.edit_original_response(content = "👌 Your image is ready, thank you for waiting ! ⏬ ")
-        await interaction.channel.send(file = discord.File(fp=image, filename = "result.png"))
+            image = await matrix.create_image() # send PIL image
+            await interaction.edit_original_response(content = "👌 Your image is ready, thank you for waiting ! ⏬ ")
+            await interaction.channel.send(file = discord.File(fp=image, filename = "result.png"))
+        except :
+            await interaction.edit_original_response("😖 Something went wrong, your image will not be delivered, please report a bug in the dedicated thread.")
         return
 
 async def setup(bot):
