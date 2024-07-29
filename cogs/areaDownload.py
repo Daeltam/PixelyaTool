@@ -71,23 +71,11 @@ class Matrix:
                     color = self.matrix[x + self.start_x][y + self.start_y].rgb
                     pxls[x, y] = color
                 except (IndexError, KeyError, AttributeError):
-                    pass
-        # Trying to make this work differently
-        # if filename is not None: 
-        #   if filename == 'b':
-        #     b = io.BytesIO()
-        #     img.save(b, "PNG")
-        #     b.seek(0)
-        #     return b
-        #   else:
-        #     img.save(filename)
-        # else:
-        #     img.show()
-        # img.close()
-        with io.BytesIO() as image_binary:
-            img.save(image_binary, 'PNG')
-            img.seek(0)
-            return img 
+                    pass  
+        image_binary = io.BytesIO()
+        img.save(image_binary, 'PNG')
+        image_binary.seek(0)
+        return image_binary
 
     def set_pixel(self, x, y, color):
         if x >= self.start_x and x < (self.start_x + self.width) and y >= self.start_y and y < (self.start_y + self.height):
@@ -339,7 +327,7 @@ class areaDownload(commands.Cog):
         # ENVOYER PROGRESS BY EDITING MESSAGE
         matrix.create_image()  # './output/'+filename) (filename should be optional if i read well)
 
-        image = matrix.create_image() # send PIL image
+        image = await matrix.create_image() # send PIL image
         # A completer avec main()
         return await interaction.response.send_message(f"👌 Your image is ready :", file = discord.File(fp=image, filename = "result.png"))
 
