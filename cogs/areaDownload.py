@@ -143,7 +143,7 @@ async def fetch(session, canvas_id, canvasoffset, ix, iy, target_matrix):
             await asyncio.sleep(3)
             pass
 
-async def get_area(canvas_id, canvas, x, y, w, h):
+async def get_area(canvas_id, canvas, x, y, w, h, interaction : discord.Interaction):
     target_matrix = Matrix()
     target_matrix.add_coords(x, y, w, h)
     canvasoffset = math.pow(canvas['size'], 0.5)
@@ -155,10 +155,14 @@ async def get_area(canvas_id, canvas, x, y, w, h):
     print(f"Loading from {xc} / {yc} to {wc + 1} / {hc + 1}")
     tasks = []
     async with aiohttp.ClientSession() as session:
+        total = (hc + 1 - yc)*(wc + 1 - xc)
+        rank = 0
         for iy in range(yc, hc + 1):
             for ix in range(xc, wc + 1):
-                total_lengh = (hc +1 - yc)*(wc + 1 - xc)
                 tasks.append(fetch(session, canvas_id, canvasoffset, ix, iy, target_matrix))
+                rank += 1
+                percentage = (rank/total)*100
+                await interaction.edit_original_response(content = f"Image processing : {percentage}% done.")
 # LOOP IS HERE CMON PERCENTAGE
         await asyncio.gather(*tasks)
         return target_matrix
@@ -325,14 +329,11 @@ class areaDownload(commands.Cog):
 
         EnumColorPixelya.getColors(canvas_infos)
 
-        matrix = await get_area(canvas_id, canvas_infos, x, y, w, h)
-        # ENVOYER PROGRESS BY EDITING MESSAGE
-        matrix.create_image()  # './output/'+filename) (filename should be optional if i read well)
+        matrix = await get_area(canvas_id, canvas_infos, x, y, w, h, interaction)
 
         image = await matrix.create_image() # send PIL image
-        # A completer avec main()
-        await interaction.edit_original_response(content = "Thank you for waiting !")
-        await interaction.channel.send(f"👌 Your image is ready :", file = discord.File(fp=image, filename = "result.png"))
+        await interaction.edit_original_response(content = "👌 Your image is ready, thank you for waiting ! ⏬ ")
+        await interaction.channel.send(file = discord.File(fp=image, filename = "result.png"))
         return
 
 async def setup(bot):
