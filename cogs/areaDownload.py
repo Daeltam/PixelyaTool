@@ -71,7 +71,7 @@ class Matrix:
                     color = self.matrix[x + self.start_x][y + self.start_y].rgb
                     pxls[x, y] = color
                 except (IndexError, KeyError, AttributeError):
-                    pass  
+                    pass
         image_binary = io.BytesIO()
         img.save(image_binary, 'PNG')
         image_binary.seek(0)
@@ -157,6 +157,7 @@ async def get_area(canvas_id, canvas, x, y, w, h):
     async with aiohttp.ClientSession() as session:
         for iy in range(yc, hc + 1):
             for ix in range(xc, wc + 1):
+                total_lengh = (hc +1 - yc)*(wc + 1 - xc)
                 tasks.append(fetch(session, canvas_id, canvasoffset, ix, iy, target_matrix))
 # LOOP IS HERE CMON PERCENTAGE
         await asyncio.gather(*tasks)
@@ -306,14 +307,15 @@ class areaDownload(commands.Cog):
         global USER_AGENT
         USER_AGENT = "pyf areaDownload 1.0 " + maps.value + " " + startx_starty + " " + endx_endy
         print("downloadArea called")
+        await interaction.response.send_message("Your image is being processed, please wait")
         apime = await fetchMe()
         canvas_id = maps.value
 
         if canvas_id not in apime['canvases']:
             return await interaction.response.send_message("❌ Invalid canvas selected")
-        canvas = apime['canvases'][canvas_id]
+        canvas_infos = apime['canvases'][canvas_id]
 
-        parseCoords = validateCoorRange(startx_starty, endx_endy, canvas['size'])
+        parseCoords = validateCoorRange(startx_starty, endx_endy, canvas_infos['size'])
         if (type(parseCoords) is str):
             return await interaction.response.send_message(parseCoords)
         else:
@@ -321,15 +323,17 @@ class areaDownload(commands.Cog):
             w = w - x + 1
             h = h - y + 1
 
-        EnumColorPixelya.getColors(canvas)
+        EnumColorPixelya.getColors(canvas_infos)
 
-        matrix = await get_area(canvas_id, canvas, x, y, w, h)
+        matrix = await get_area(canvas_id, canvas_infos, x, y, w, h)
         # ENVOYER PROGRESS BY EDITING MESSAGE
         matrix.create_image()  # './output/'+filename) (filename should be optional if i read well)
 
         image = await matrix.create_image() # send PIL image
         # A completer avec main()
-        return await interaction.response.send_message(f"👌 Your image is ready :", file = discord.File(fp=image, filename = "result.png"))
+        await interaction.edit_original_response(content = "Thank you for waiting !")
+        await interaction.channel.send(f"👌 Your image is ready :", file = discord.File(fp=image, filename = "result.png"))
+        return
 
 async def setup(bot):
     await bot.add_cog(areaDownload(bot))
