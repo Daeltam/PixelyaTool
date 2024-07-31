@@ -238,7 +238,7 @@ class areaDownload(commands.Cog):
             description="Here is an explaination on how to use this command without making the bot sending an error message :",
             url="https://www.pixelya.fun",
             color=discord.Color.from_rgb(173, 233, 230),
-            timestamp=datetime.datetime.now(datetime.UTC)
+            timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
         global canvas
         canvases = apime['canvases'].items()
