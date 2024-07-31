@@ -275,7 +275,7 @@ class areaDownload(commands.Cog):
 
             parseCoords = validateCoorRange(startx_starty, endx_endy, canvas_infos['size'])
             if (type(parseCoords) is str):
-                return await interaction.edit_original_response(parseCoords)
+                return await interaction.edit_original_response(content = parseCoords)
 
             else:
                 x, y, w, h = parseCoords
@@ -292,7 +292,7 @@ class areaDownload(commands.Cog):
         except :
             thread = self.bot.get_channel(1268162950485512272)
             error_message = f"<a:error40:1267490066125819907> Something went wrong, your image will not be delivered, please report a bug in the dedicated thread : {thread.mention}"
-            await interaction.edit_original_response(error_message)
+            await interaction.edit_original_response(content = error_message)
         return
 
 async def setup(bot):
