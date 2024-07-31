@@ -158,7 +158,7 @@ async def get_area(canvas_id, canvas, x, y, w, h, interaction : discord.Interact
                 tasks.append(fetch(session, canvas_id, canvasoffset, ix, iy, target_matrix))
                 rank += 1
                 percentage = (rank/total)*100
-                percentageBar = "".join(['🟩' for k in range(round(percentage/5))]+['🟫' for k in range(20-round(percentage/5))])
+                percentageBar = "".join([':green_square:' for k in range(round(percentage/5))]+[':brown_square:' for k in range(20-round(percentage/5))])
                 await interaction.edit_original_response(content = f"<a:loading:1267469203103940673> Image processing {percentageBar}")  # : {percentage}% done.")
         await asyncio.gather(*tasks)
         return target_matrix
@@ -240,7 +240,7 @@ class areaDownload(commands.Cog):
         )
         global canvas
         canvases = apime['canvases'].items()
-        informations.add_field(name="Maps", value=f"Here are the available canvases : {" ; ".join(self.canvas.keys())}", inline = False)
+        informations.add_field(name="Maps", value=f"Here are the available canvases : {' ; '.join(self.canvas.keys())}", inline = False)
         mapsEnum = Enum('maps', self.canvas)
         informations.add_field(name="Coordinates", value = "Use `R` key in the canvas to pick coordinates. You need the Upper left corner (startx_starty) and the bottom right corner (endx_endy)", inline = False)
 
@@ -283,7 +283,7 @@ class areaDownload(commands.Cog):
             matrix = await get_area(canvas_id, canvas_infos, x, y, w, h, interaction)
 
             image = await matrix.create_image() # send PIL image
-            await interaction.edit_original_response(content = "<a:shiny:1267483837148037190> Your image is ready, thank you for waiting ! ⏬ ")
+            await interaction.edit_original_response(content = "<a:shiny:1267483837148037190> Your image is ready, thank you for waiting ! :arrow_double_down: ")
             await interaction.channel.send(file = discord.File(fp=image, filename = "result.png"))
         except :
             await interaction.edit_original_response("<a:error40:1267490066125819907> Something went wrong, your image will not be delivered, please report a bug in the dedicated thread.")
