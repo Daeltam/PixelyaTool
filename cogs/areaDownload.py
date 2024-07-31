@@ -189,6 +189,8 @@ def validateCoorRange(ulcoor: str, brcoor: str, canvasSize: int):
         error = "y of bottom-right corner is not a valid number"
     elif (u < x or v < y):
         error = "Corner coordinates are aligned wrong"
+    elif (u-x)*(v-y)>3000000:
+        error = ":x: You do not have the permissions to download such a huge map file, please have mercy for the bot's connecxion."
 
     if not error is None:
         return error
@@ -274,10 +276,6 @@ class areaDownload(commands.Cog):
             parseCoords = validateCoorRange(startx_starty, endx_endy, canvas_infos['size'])
             if (type(parseCoords) is str):
                 return await interaction.edit_original_response(parseCoords)
-            
-            is_too_big = (endx_endy.split("_")[0] - startx_starty.split("_")[0]) * (endx_endy.split('_')[1] - startx_starty.split('_')[1]) > 3000000
-            if is_too_big :
-                return await interaction.edit_original_response(":x: You do not have the permissions to download such a huge map file, please have merci for the bot's connecxion.")
 
             else:
                 x, y, w, h = parseCoords
@@ -293,7 +291,8 @@ class areaDownload(commands.Cog):
             await interaction.channel.send(file = discord.File(fp=image, filename = "result.png"))
         except :
             thread = self.bot.get_channel(1268162950485512272)
-            await interaction.edit_original_response(f"<a:error40:1267490066125819907> Something went wrong, your image will not be delivered, please report a bug in the dedicated thread : {thread.mention}")
+            error_message = f"<a:error40:1267490066125819907> Something went wrong, your image will not be delivered, please report a bug in the dedicated thread : {thread.mention}"
+            await interaction.edit_original_response(error_message)
         return
 
 async def setup(bot):
