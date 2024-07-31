@@ -244,7 +244,8 @@ class areaDownload(commands.Cog):
         mapsEnum = Enum('maps', self.canvas)
         informations.add_field(name="Coordinates", value = "Use `R` key in the canvas to pick coordinates. You need the Upper left corner (startx_starty) and the bottom right corner (endx_endy)", inline = False)
 
-        informations.add_field(name = "Result", value = "The bot will send you the result as an image directly in-chat. If it doesn't work and you have made no mistakes, please make a bug report in the dedicated thread of this channel", inline = False)
+        thread = self.bot.get_channel(1268162950485512272)
+        informations.add_field(name = "Result", value = f"The bot will send you the result as an image directly in-chat. If it doesn't work and you have made no mistakes, please make a bug report in the dedicated thread of this channel : {thread.mention}", inline = False)
 
         informations.set_author(name=self.bot.user.display_name, url = "https://github.com/Daeltam/PyfDownloadTool", icon_url=self.bot.user.avatar)
 
@@ -286,7 +287,8 @@ class areaDownload(commands.Cog):
             await interaction.edit_original_response(content = "<a:shiny:1267483837148037190> Your image is ready, thank you for waiting ! :arrow_double_down: ")
             await interaction.channel.send(file = discord.File(fp=image, filename = "result.png"))
         except :
-            await interaction.edit_original_response("<a:error40:1267490066125819907> Something went wrong, your image will not be delivered, please report a bug in the dedicated thread.")
+            thread = self.bot.get_channel(1268162950485512272)
+            await interaction.edit_original_response(f"<a:error40:1267490066125819907> Something went wrong, your image will not be delivered, please report a bug in the dedicated thread : {thread.mention}")
         return
 
 async def setup(bot):
