@@ -27,7 +27,7 @@ class AdminCommands(commands.Cog):
     @commands.guild_only()
     @commands.is_owner()
     async def sync(self, ctx: commands.Context, guilds: commands.Greedy[discord.Object], spec: Optional[Literal["~", "*", "^"]] = None) -> None:
-        """https://about.abstractumbra.dev/discord.py/2023/01/29/sync-command-example.html : link to the function"""
+        """Syncronize commands : https://about.abstractumbra.dev/discord.py/2023/01/29/sync-command-example.html : link to the function"""
         print(f"Sync command called : !sync{spec}")
         if not guilds:
             if spec == "~":
@@ -43,7 +43,7 @@ class AdminCommands(commands.Cog):
                 synced = await ctx.bot.tree.sync()
 
             await ctx.send(
-                f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild'} :/{" ; " .join([sync.name for sync in synced])} command"
+                f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild'} :/{' ; ' .join([sync.name for sync in synced])} command"
             )
             return
 
@@ -59,6 +59,7 @@ class AdminCommands(commands.Cog):
     
     @commands.command()
     async def slowmode(self, ctx : commands.Context, seconds: int, channel : discord.TextChannel = None) :
+        """Changes slowmode, give time in seconds and channel (optional) with the #"""
         is_in_private_messages = ctx.guild is None and isinstance(ctx.author, discord.User)
         if is_in_private_messages:
             return await ctx.send('This command cannot be used in private messages')

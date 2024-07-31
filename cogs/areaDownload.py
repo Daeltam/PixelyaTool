@@ -10,7 +10,6 @@ import nest_asyncio, datetime
 from enum import Enum
 nest_asyncio.apply()
 
-
 USER_AGENT = "pyf areaDownload 1.0 0 -1_-1 1_1"
 PYF_URL = "https://pixelya.fun"
 
@@ -232,7 +231,6 @@ class areaDownload(commands.Cog):
     async def info_area_download(self, interaction : discord.Interaction):
         print(f"information comment send by {interaction.user}")
         apime = await fetchMe()
-        # will send an embed explaining how download area works
         informations = discord.Embed(
             title="Download an area of pixelya",
             description="Here is an explaination on how to use this command without making the bot sending an error message :",
@@ -242,13 +240,11 @@ class areaDownload(commands.Cog):
         )
         global canvas
         canvases = apime['canvases'].items()
-        informations.add_field(name="Canvas", value=f"Here are the available canvases : {" ; ".join(self.canvas.keys())}", inline = False)
-        print(type(self.canvas.values()))
+        informations.add_field(name="Maps", value=f"Here are the available canvases : {" ; ".join(self.canvas.keys())}", inline = False)
         mapsEnum = Enum('maps', self.canvas)
-        print(mapsEnum)
         informations.add_field(name="Coordinates", value = "Use `R` key in the canvas to pick coordinates. You need the Upper left corner (startx_starty) and the bottom right corner (endx_endy)", inline = False)
 
-        informations.add_field(name = "Result", value = "The bot will send you the result. If it doesn't work and you have made no mistakes, please make a but report in the dedicated thread of this channel", inline = False)
+        informations.add_field(name = "Result", value = "The bot will send you the result as an image directly in-chat. If it doesn't work and you have made no mistakes, please make a bug report in the dedicated thread of this channel", inline = False)
 
         informations.set_author(name=self.bot.user.display_name, url = "https://github.com/Daeltam/PyfDownloadTool", icon_url=self.bot.user.avatar)
 
@@ -258,23 +254,25 @@ class areaDownload(commands.Cog):
 
     mapsEnum = Enum('maps', canvas)
     @group.command(name = "download", description = "Sends the pixelya map between two coordinates in a file.")
-    @app_commands.describe(maps = "Map from which you want to download the image")
+    @app_commands.describe(maps = "Map from which you want to download the image",
+                           startx_starty = "Top left coordinates in the good format",
+                           endx_endy = "Bottom right coordinates in the good format")
     async def download_area(self, interaction : discord.Interaction, maps : mapsEnum, startx_starty : str, endx_endy : str):
         global USER_AGENT
         USER_AGENT = "pyf areaDownload 1.0 " + maps.value + " " + startx_starty + " " + endx_endy
         print(f"downloadArea called by {interaction.user}")
-        await interaction.response.send_message("Your image is being processed, please wait")
+        await interaction.response.send_message("<a:loading:1267469203103940673> Your image is being processed, please wait")
         try : 
             apime = await fetchMe()
             canvas_id = maps.value
 
             if canvas_id not in apime['canvases']:
-                return await interaction.response.send_message("❌ Invalid canvas selected")
+                return await interaction.edit_original_response("❌ Invalid canvas selected")
             canvas_infos = apime['canvases'][canvas_id]
 
             parseCoords = validateCoorRange(startx_starty, endx_endy, canvas_infos['size'])
             if (type(parseCoords) is str):
-                return await interaction.response.send_message(parseCoords)
+                return await interaction.edit_original_response(parseCoords)
             else:
                 x, y, w, h = parseCoords
                 w = w - x + 1

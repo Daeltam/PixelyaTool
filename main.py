@@ -11,10 +11,11 @@ class Bot(commands.Bot):
         print(f"Logged in as: {self.user}")
         # Load extensions here
         await load()
-bot = Bot(command_prefix="pyd ", intents= discord.Intents.all(), activity=discord.Activity(type=discord.ActivityType.listening, name="to your commands"))
+bot = Bot(command_prefix="pyd ", intents= discord.Intents.all(), activity=discord.Activity(type=discord.ActivityType.listening, name="your commands"))
 
 async def load():
-    for filename in os.listdir(r"D:\Perso\Programmation\Discord_Bot\PyfDownloadTool\cogs"):
+    """Loads the module"""
+    for filename in os.listdir("~/cogs"):
         if filename.endswith(".py") :
             await bot.load_extension(f"cogs.{filename[:-3]}")
 
@@ -23,11 +24,12 @@ async def load():
 async def reloading(ctx : commands.Context, *, module : str):
     """Reloads a module"""
     print(f"trying to reload {module}")
-    if (module + ".py" not in os.listdir(r"D:\Perso\Programmation\Discord_Bot\PyfDownloadTool\cogs")) and module != " all " :
-        await ctx.send(f"This module doesn't exist, here is the list of modules : {os.listdir(r"D:\Perso\Programmation\Discord_Bot\PyfDownloadTool\cogs")}")
+    if (module + ".py" not in os.listdir("~/cogs")) and module != " all " :
+        dirs = os.listdir('~/cogs')
+        await ctx.send(f"This module doesn't exist, here is the list of modules : {dirs}") 
     try:
         if module == "all" :
-            for file in os.listdir(r"D:\Perso\Programmation\Discord_Bot\PyfDownloadTool\cogs") :
+            for file in os.listdir("~/cogs") :
                 await bot.unload_extension("cogs." +file)
                 await bot.load_extension("cogs."+ file)
         else :
