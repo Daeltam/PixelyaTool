@@ -189,7 +189,7 @@ def validateCoorRange(ulcoor: str, brcoor: str, canvasSize: int):
         error = "y of bottom-right corner is not a valid number"
     elif (u < x or v < y):
         error = "Corner coordinates are aligned wrong"
-    elif (u-x)*(v-y)>3000000:
+    elif (u-x)*(v-y)>357913941 :
         error = ":x: You do not have the permissions to download such a huge map file, please have mercy for the bot's connecxion."
 
     if not error is None:
@@ -244,7 +244,7 @@ class areaDownload(commands.Cog):
         canvases = apime['canvases'].items()
         informations.add_field(name="Maps", value=f"Here are the available canvases : {' ; '.join(self.canvas.keys())}", inline = False)
         mapsEnum = Enum('maps', self.canvas)
-        informations.add_field(name="Coordinates", value = "Use `R` key in the canvas to pick coordinates. You need the Upper left corner (startx_starty) and the bottom right corner (endx_endy). Max size is 3Million pixels", inline = False)
+        informations.add_field(name="Coordinates", value = "Use `R` key in the canvas to pick coordinates. You need the Upper left corner (startx_starty) and the bottom right corner (endx_endy). Max size is 35 Million pixels (357913941 exactly)", inline = False)
 
         thread = self.bot.get_channel(1268162950485512272)
         informations.add_field(name = "Result", value = f"The bot will send you the result as an image directly in-chat. If it doesn't work and you have made no mistakes, please make a bug report in the dedicated thread of this channel : {thread.mention}", inline = False)
