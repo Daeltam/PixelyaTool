@@ -22,6 +22,7 @@ class EnumColorPixelya:
 
     ENUM = []
 
+    @staticmethod
     def getColors(canvas):
         colors = canvas['colors']
         for i, color in enumerate(colors):
@@ -285,6 +286,7 @@ class areaDownload(commands.Cog):
             EnumColorPixelya.getColors(canvas_infos)
 
             matrix = await get_area(canvas_id, canvas_infos, x, y, w, h, interaction)
+            print(canvas_id, "\n", canvas_infos, "\n", EnumColorPixelya.ENUM)
 
             image = await matrix.create_image() # send PIL image
             await interaction.edit_original_response(content = f"<a:shiny:1267483837148037190> {interaction.user.mention} Your image is ready, thank you for waiting ! :arrow_double_down: ")
