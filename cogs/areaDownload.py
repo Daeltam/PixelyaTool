@@ -287,7 +287,7 @@ class areaDownload(commands.Cog):
             matrix = await get_area(canvas_id, canvas_infos, x, y, w, h, interaction)
 
             image = await matrix.create_image() # send PIL image
-            await interaction.edit_original_response(content = "<a:shiny:1267483837148037190> Your image is ready, thank you for waiting ! :arrow_double_down: ")
+            await interaction.edit_original_response(content = f"<a:shiny:1267483837148037190> {interaction.user.mention} Your image is ready, thank you for waiting ! :arrow_double_down: ")
             await interaction.channel.send(file = discord.File(fp=image, filename = "result.png"))
         except :
             thread = self.bot.get_channel(1268162950485512272)
