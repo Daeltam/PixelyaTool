@@ -259,7 +259,7 @@ class historyDownload(commands.Cog):
         return await interaction.response.send_message(embed=informations)
     
     mapsEnum = Enum('maps', canvas)
-    @app_commands.choices(privacy = [app_commands.Choice(name = "Private", value = discord.ChannelType.private_thread), app_commands.Choice(name = "Public", value = discord.ChannelType.public_thread)])
+    @app_commands.choices(privacy = [app_commands.Choice(name = "Private", value = 0), app_commands.Choice(name = "Public", value = 1)])
     @group.command(name = "download", description = "Sends the pixelya maps between two coordinates and two dates in a thread.")
     @app_commands.describe(maps = "Map from which you want to download the image",
                            startx_starty = "Top left coordinates in the good format",
@@ -281,11 +281,19 @@ class historyDownload(commands.Cog):
         USER_AGENT = "pyf areaDownload 1.0 " + maps.value + " " + startx_starty + " " + endx_endy + " " + startDate + " " + endDate
         print(f"downloadArea called by {interaction.user}")
         await interaction.response.send_message("<a:loading:1267469203103940673> Your image is being processes, please wait")
-        thread = await interaction.channel.create_thread(
+        if privacy == 1 :
+            thread = await interaction.channel.create_thread(
             name = f"{interaction.user.name}'s History download on {datetime.datetime.now()}",
             auto_archive_duration=10080, slowmode_delay=None,
             reason = f"{interaction.user}'s history file",
-            type=privacy,
+            type=discord.ChannelType.public_thread,
+            invitable=True)
+        elif privacy == 2 :
+            thread = await interaction.channel.create_thread(
+            name = f"{interaction.user.name}'s History download on {datetime.datetime.now()}",
+            auto_archive_duration=10080, slowmode_delay=None,
+            reason = f"{interaction.user}'s history file",
+            type=discord.ChannelType.private_thread,
             invitable=True)
         try :
             apime = await fetchMe()
