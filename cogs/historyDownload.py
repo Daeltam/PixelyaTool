@@ -168,45 +168,6 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread):
             image.close()
     previous_day.close()
 
-async def main():
-    apime = await fetchMe()
-    # done
-    if len(sys.argv) != 5 and len(sys.argv) != 6:
-        print("\nUsage    : historyDownload.py canvasID startX_startY endX_endY [startDate YYYY-MM-DD] [endDate YYYY-MM-DD]")
-        print("Canvases : ", end='')
-        for canvas_id, canvas in apime['canvases'].items():
-            print(f"{canvas_id} = {canvas['title']}", end=' | ')
-        print(f'\n')
-        return
-    
-
-    canvas_id = sys.argv[1]
-
-    if canvas_id not in apime['canvases']:
-        print("Invalid canvas selected")
-        return
-
-    canvas = apime['canvases'][canvas_id] # /!\ canvas_infos
-    # done
-    start = sys.argv[2].split('_')
-    end = sys.argv[3].split('_')
-    start_date = datetime.date.fromisoformat(sys.argv[4])
-    if len(sys.argv) == 6:
-        end_date = datetime.date.fromisoformat(sys.argv[5])
-    else:
-        end_date = datetime.date.today()
-    x = int(start[0])
-    y = int(start[1])
-    w = int(end[0]) - x + 1
-    h = int( end[1]) - y + 1
-    if not os.path.exists('./output/timelapse'):
-        os.mkdir('./output/timelapse')
-    await get_area(canvas_id, canvas, x, y, w, h, start_date, end_date)
-    print("\nDone! you can find the frames on the timelapse folder inside the output folder.")
-
-if __name__ == "__main__":
-    asyncio.run(main())
-
 class historyDownload(commands.Cog):
     def __init__(self, bot : commands.Bot) -> None:
         self.bot = bot
@@ -264,21 +225,21 @@ class historyDownload(commands.Cog):
     @app_commands.describe(maps = "Map from which you want to download the image",
                            startx_starty = "Top left coordinates in the good format",
                            endx_endy = "Bottom right coordinates in the good format",
-                           startDate = "Starting date in the YYYY-MM-DD format",
-                           endDate = "Ending date in the YYYY-MM-DD format, automatically set as today",
+                           start_date = "Starting date in the YYYY-MM-DD format",
+                           end_date = "Ending date in the YYYY-MM-DD format, automatically set as today",
                            privacy = "Defines if the images will be sent in a public or a private thread. You will be pentionned in the private thread when all the images will be finished")
     async def download_area(self,
                             interaction : discord.Interaction, 
                             maps : mapsEnum, 
                             startx_starty : str, 
                             endx_endy : str, 
-                            startDate : str, 
-                            endDate : str = "today", 
+                            start_date : str, 
+                            end_date : str = "today", 
                             privacy : app_commands.Choice[int] = 0):
         if interaction.user.id != 1094995425326542898 :
             await interaction.response.send_message("This command is still Work In Progress, you will be notified when released to the public.")
         global USER_AGENT
-        USER_AGENT = "pyf areaDownload 1.0 " + maps.value + " " + startx_starty + " " + endx_endy + " " + startDate + " " + endDate
+        USER_AGENT = "pyf areaDownload 1.0 " + maps.value + " " + startx_starty + " " + endx_endy + " " + start_date + " " + end_date
         print(f"downloadArea called by {interaction.user}")
         await interaction.response.send_message("<a:loading:1267469203103940673> Your image is being processes, please wait")
         if privacy == 1 :
@@ -305,11 +266,11 @@ class historyDownload(commands.Cog):
             start = startx_starty.split('_')
             end = endx_endy.split('_')
             try :
-                start_date = datetime.date.fromisoformat(startDate)
-                if endDate == "today":
+                start_date = datetime.date.fromisoformat(start_date)
+                if end_date == "today":
                     end_date = datetime.date.today()
                 else:
-                    end_date = datetime.date.fromisoformat(endDate)
+                    end_date = datetime.date.fromisoformat(end_date)
             except :
                 await interaction.edit_original_response("<a:error40:1267490066125819907> Your date format is wrong and created an error, please make ture to use the YYYY-MM-DD format.")
             x = int(start[0])
