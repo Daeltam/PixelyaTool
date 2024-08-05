@@ -274,7 +274,7 @@ class historyDownload(commands.Cog):
                             endx_endy : str, 
                             startDate : str, 
                             endDate : str = "today", 
-                            privacy : app_commands.Choice[discord.ChannelType] = 0):
+                            privacy : app_commands.Choice[int] = 0):
         if interaction.user.id != 1094995425326542898 :
             await interaction.response.send_message("This command is still Work In Progress, you will be notified when released to the public.")
         global USER_AGENT
