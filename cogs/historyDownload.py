@@ -245,7 +245,7 @@ class historyDownload(commands.Cog):
         )
         global canvas
         canvases = apime['canvases'].items()
-        informations.add_field(name="Maps", value=f"Here are the available canvases : {" ; ".join(self.canvas.keys())}", inline = False)
+        informations.add_field(name="Maps", value=f"Here are the available canvases : {' ; '.join(self.canvas.keys())}", inline = False)
 
         informations.add_field(name="Coordinates", value = "Use `R` key in the canvas to pick coordinates. You need the Upper left corner (startx_starty) and the bottom right corner (endx_endy)", inline = False)
 
