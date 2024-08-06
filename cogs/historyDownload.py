@@ -241,7 +241,7 @@ class historyDownload(commands.Cog):
         global USER_AGENT
         USER_AGENT = "pyf areaDownload 1.0 " + maps.value + " " + startx_starty + " " + endx_endy + " " + start_date + " " + end_date
         print(f"downloadArea called by {interaction.user}")
-        await interaction.response.send_message("<a:loading:1267469203103940673> Your image is being processes, please wait")
+        await interaction.response.send_message("<a:loading:1267469203103940673> Your image is being processed, please wait")
         if privacy == 1 :
             thread = await interaction.channel.create_thread(
             name = f"{interaction.user.name}'s History download on {datetime.datetime.now()}",
@@ -281,8 +281,8 @@ class historyDownload(commands.Cog):
 
             return interaction.edit_original_response(content = f"<a:shiny:1267483837148037190> {interaction.user.mention} Your images are ready, thank you for waiting ! You can find them here : {thread.mention} ")
         except Exception as error :
+            print(error)
             await interaction.edit_original_response(content = "<a:error40:1267490066125819907> Something went wrong, your image will not be delivered, please report a bug in the dedicated thread.")
-            return print(error)
         # Create thread (private, invite = True), ask to wait, loading process
         # try things, sends in thread, wait during this time and progress bar
         # pings in thread only when ended
