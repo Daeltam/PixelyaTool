@@ -251,7 +251,7 @@ class historyDownload(commands.Cog):
             reason = f"{interaction.user}'s history file",
             type=discord.ChannelType.public_thread,
             invitable=True)
-        elif privacy == 2 :
+        elif privacy == 0 :
             thread = await interaction.channel.create_thread(
             name = f"{interaction.user.name}'s History download on {datetime.datetime.now()}",
             auto_archive_duration=10080, slowmode_delay=None,
