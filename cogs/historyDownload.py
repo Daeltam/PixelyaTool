@@ -243,6 +243,7 @@ class historyDownload(commands.Cog):
         USER_AGENT = "pyf areaDownload 1.0 " + maps.value + " " + startx_starty + " " + endx_endy + " " + start_date + " " + end_date
         print(f"downloadArea called by {interaction.user}")
         await interaction.response.send_message("<a:loading:1267469203103940673> Your image is being processed, please wait")
+        thread : discord.Thread
         if privacy == 1 :
             thread = await interaction.channel.create_thread(
             name = f"{interaction.user.name}'s History download on {datetime.datetime.now()}",
