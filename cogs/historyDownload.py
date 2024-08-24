@@ -49,7 +49,6 @@ async def fetch(session, url, offx, offy, image, bkg, needed = False):
                     if needed:
                         img = PIL.Image.new('RGB', (256, 256), color=bkg)
                         image.paste(img, (offx, offy))
-                        img.close()
                     return
                 if resp.status != 200:
                     if needed:
@@ -58,7 +57,6 @@ async def fetch(session, url, offx, offy, image, bkg, needed = False):
                 data = await resp.read()
                 img = PIL.Image.open(io.BytesIO(data)).convert('RGBA')
                 image.paste(img, (offx, offy), img)
-                img.close()
                 return
         except:
             if attempts > 3:
@@ -69,7 +67,6 @@ async def fetch(session, url, offx, offy, image, bkg, needed = False):
 async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread):
     canvas_size = canvas["size"]
     bkg = tuple(canvas['colors'][0])
-
     delta = datetime.timedelta(days=1)
     end_date = end_date.strftime("%Y%m%d")
     iter_date = None
@@ -115,10 +112,10 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread):
                 image = previous_day.copy()
             cnt += 1
 
-            image_binary = io.BytesIO() # WORKS ?
+            image_binary = io.BytesIO()
             image.save(image_binary, 'PNG')
             image_binary.seek(0)
-            await thread.send(text = f"Frame number {cnt}", file = discord.File(fp = image_binary, filename = "Frame%s"%(cnt)))
+            await thread.send(f"Frame number {cnt}", file = discord.File(fp = image_binary, filename = "Frame%s.png"%(cnt)))
             headers = {
                 'User-Agent': USER_AGENT
             }
@@ -153,14 +150,10 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread):
                 await asyncio.gather(*tasks)
                 print('Got data from time %s' % (time))
                 cnt += 1
-                # HERE ?
-                # THREAD.SEND
-                image_rel.save('./output/timelapse/t%s.png' % (cnt))
-                # keep tjis :up: in case of
-                image_rel_binary = io.BytesIO() # WORKS ?
-                image_rel.save(image_binary, 'PNG')
+                image_rel_binary = io.BytesIO()
+                image_rel.save(image_rel_binary, 'PNG')
                 image_rel_binary.seek(0)
-                await thread.send(text = f"Frame number {cnt}", file = discord.File(fp = image_rel_binary, filename = "Frame%s"%(cnt)))
+                await thread.send(f"Frame number {cnt}", file = discord.File(fp = image_rel_binary, filename = "Frame%s.png"%(cnt)))
                 if time == time_list[-1]:
 
                     previous_day.close()
@@ -237,27 +230,28 @@ class historyDownload(commands.Cog):
                             start_date : str, 
                             end_date : str = "today", 
                             privacy : app_commands.Choice[int] = 0):
-        if interaction.user.id != 1094995425326542898 :
-            await interaction.response.send_message("This command is still Work In Progress, you will be notified when released to the public.")
         global USER_AGENT
         USER_AGENT = "pyf areaDownload 1.0 " + maps.value + " " + startx_starty + " " + endx_endy + " " + start_date + " " + end_date
         print(f"downloadArea called by {interaction.user}")
         await interaction.response.send_message("<a:loading:1267469203103940673> Your image is being processed, please wait")
         thread : discord.Thread
-        if privacy == 1 :
+        print(privacy)
+        if privacy.value == 1 :
             thread = await interaction.channel.create_thread(
-            name = f"{interaction.user.name}'s History download on {datetime.datetime.now()}",
-            auto_archive_duration=10080, slowmode_delay=None,
-            reason = f"{interaction.user}'s history file",
-            type=discord.ChannelType.public_thread,
-            invitable=True)
-        elif privacy == 0 :
+                name = f"{interaction.user.name}'s History download on {datetime.date.today()}",
+                auto_archive_duration=10080,
+                slowmode_delay=None,
+                reason = f"{interaction.user}'s history file",
+                type=discord.ChannelType.public_thread,
+                invitable=True)
+        elif privacy.value == 0 : # * Default value
             thread = await interaction.channel.create_thread(
-            name = f"{interaction.user.name}'s History download on {datetime.datetime.now()}",
-            auto_archive_duration=10080, slowmode_delay=None,
-            reason = f"{interaction.user}'s history file",
-            type=discord.ChannelType.private_thread,
-            invitable=True)
+                name = f"{interaction.user.name}'s History download on {datetime.date.today()}",
+                auto_archive_duration=10080,
+                slowmode_delay=None,
+                reason = f"{interaction.user}'s history file",
+                type=discord.ChannelType.private_thread,
+                invitable=True)
         try :
             apime = await fetchMe()
             canvas_id = maps.value
@@ -274,20 +268,19 @@ class historyDownload(commands.Cog):
                 else:
                     end_date = datetime.date.fromisoformat(end_date)
             except :
-                await interaction.edit_original_response("<a:error40:1267490066125819907> Your date format is wrong and created an error, please make ture to use the YYYY-MM-DD format.")
+                error_message= "<a:error40:1267490066125819907> Your date format is wrong and created an error, please make ture to use the YYYY-MM-DD format."
+                await interaction.edit_original_response(error_message)
             x = int(start[0])
             y = int(start[1])
             w = int(end[0]) - x + 1
             h = int(end[1]) - y + 1
             await get_area(canvas_id, canvas_infos, x, y, w, h, start_date, end_date, thread) # SEND IMAGE IN GET_AREA
-
-            return interaction.edit_original_response(content = f"<a:shiny:1267483837148037190> {interaction.user.mention} Your images are ready, thank you for waiting ! You can find them here : {thread.mention} ")
+            await thread.send(f"{interaction.user.mention}, your images are here !")
+            print("Download completed !")
+            return await interaction.edit_original_response(content = f"@silent <a:shiny:1267483837148037190> {interaction.user.mention} Your images are ready, thank you for waiting ! You can find them here : {thread.mention} ")
         except Exception:
             print(traceback.print_exc())
             await interaction.edit_original_response(content = "<a:error40:1267490066125819907> Something went wrong, your image will not be delivered, please report a bug in the dedicated thread.")
-        # Create thread (private, invite = True), ask to wait, loading process
-        # try things, sends in thread, wait during this time and progress bar
-        # pings in thread only when ended
 
 async def setup(bot):
     await bot.add_cog(historyDownload(bot))
