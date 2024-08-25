@@ -5,6 +5,7 @@ from discord.ext import commands
 import PIL.Image
 import sys, os, io, math
 import asyncio
+import traceback
 import aiohttp
 import nest_asyncio, datetime
 from enum import Enum
@@ -25,6 +26,7 @@ class EnumColorPixelya:
     @staticmethod
     def getColors(canvas):
         colors = canvas['colors']
+        # print(colors)
         for i, color in enumerate(colors):
             EnumColorPixelya.ENUM.append(Color(i, tuple(color)))
     
@@ -34,6 +36,16 @@ class EnumColorPixelya:
             if i == color.index:
                 return color
         return EnumColorPixelya.ENUM[0]
+    
+class OwnEnumColor :
+    Colors : dict[int, str]  = {}
+
+    @staticmethod
+    def getColors(canvas):
+        colors = canvas['colors']
+        # print(colors)
+        for i, color in enumerate(colors):
+            OwnEnumColor.Colors[i] = Color(i, tuple(color))
 
 class Matrix:
     def __init__(self):
@@ -115,7 +127,10 @@ async def fetch(session, canvas_id, canvasoffset, ix, iy, target_matrix):
                 off_x = ix * 256 + offset
                 off_y = iy * 256 + offset
                 if len(data) == 0:
-                    clr = EnumColorPixelya.index(0)
+                    clr = OwnEnumColor.Colors[0]
+                    # print("FETCH DETAILS")
+                    # print("clr = ", clr)
+                    # print("ECP.index(0) = ", EnumColorPixelya.index(0))
                     for i in range(256*256):
                         tx = off_x + i % 256 
                         ty = off_y + i // 256
@@ -126,7 +141,11 @@ async def fetch(session, canvas_id, canvasoffset, ix, iy, target_matrix):
                         tx = off_x + i % 256
                         ty = off_y + i // 256
                         bcl = b & 0x7F
-                        target_matrix.set_pixel(tx, ty, EnumColorPixelya.index(bcl))
+                        # print("bcl =" , bcl)
+                        # print("OEC =",  OwnEnumColor.Colors[bcl])
+                        # print("ECP.I(bcl) = ",  EnumColorPixelya.index(bcl))
+                        # # target_matrix.set_pixel(tx, ty, EnumColorPixelya.index(bcl))
+                        target_matrix.set_pixel(tx, ty, OwnEnumColor.Colors[bcl])
                         i += 1
 
                 print(f"Downloaded a new chunk from {url}")
@@ -283,14 +302,22 @@ class areaDownload(commands.Cog):
                 w = w - x + 1
                 h = h - y + 1
 
-            EnumColorPixelya.getColors(canvas_infos)
-
+            # EnumColorPixelya.getColors(canvas_infos)
+            # print("ENUM COLORS HERE")
+            # enumcolors = [ (elem.rgb, elem.index) for elem in EnumColorPixelya.ENUM ]
+            # print(enumcolors)
+            OwnEnumColor.getColors(canvas_infos)
+            # print("OWN COLORS DOWN THERE §§§")
+            # print(OwnEnumColor.Colors)
+            # print("EXAMPLE")
+            # print(OwnEnumColor.Colors[0])
             matrix = await get_area(canvas_id, canvas_infos, x, y, w, h, interaction)
 
-            image = await matrix.create_image() # send PIL image
+            image = await matrix.create_image() # ? send PIL image
             await interaction.edit_original_response(content = f"<a:shiny:1267483837148037190> {interaction.user.mention} Your image is ready, thank you for waiting ! :arrow_double_down: ")
             await interaction.channel.send(file = discord.File(fp=image, filename = "result.png"))
-        except :
+        except Exception:
+            traceback.print_exc()
             thread = self.bot.get_channel(1268162950485512272)
             error_message = f"<a:error40:1267490066125819907> Something went wrong, your image will not be delivered, please report a bug in the dedicated thread : {thread.mention}"
             await interaction.edit_original_response(content = error_message)
