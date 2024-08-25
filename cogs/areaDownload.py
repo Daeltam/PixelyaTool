@@ -18,24 +18,6 @@ class Color(object):
     def __init__(self, index, rgb):
         self.rgb = rgb
         self.index = index
-
-class EnumColorPixelya:
-
-    ENUM = []
-
-    @staticmethod
-    def getColors(canvas):
-        colors = canvas['colors']
-        # print(colors)
-        for i, color in enumerate(colors):
-            EnumColorPixelya.ENUM.append(Color(i, tuple(color)))
-    
-    @staticmethod
-    def index(i):
-        for color in EnumColorPixelya.ENUM:
-            if i == color.index:
-                return color
-        return EnumColorPixelya.ENUM[0]
     
 class OwnEnumColor :
     Colors : dict[int, str]  = {}
@@ -43,7 +25,6 @@ class OwnEnumColor :
     @staticmethod
     def getColors(canvas):
         colors = canvas['colors']
-        # print(colors)
         for i, color in enumerate(colors):
             OwnEnumColor.Colors[i] = Color(i, tuple(color))
 
@@ -128,9 +109,6 @@ async def fetch(session, canvas_id, canvasoffset, ix, iy, target_matrix):
                 off_y = iy * 256 + offset
                 if len(data) == 0:
                     clr = OwnEnumColor.Colors[0]
-                    # print("FETCH DETAILS")
-                    # print("clr = ", clr)
-                    # print("ECP.index(0) = ", EnumColorPixelya.index(0))
                     for i in range(256*256):
                         tx = off_x + i % 256 
                         ty = off_y + i // 256
@@ -141,10 +119,6 @@ async def fetch(session, canvas_id, canvasoffset, ix, iy, target_matrix):
                         tx = off_x + i % 256
                         ty = off_y + i // 256
                         bcl = b & 0x7F
-                        # print("bcl =" , bcl)
-                        # print("OEC =",  OwnEnumColor.Colors[bcl])
-                        # print("ECP.I(bcl) = ",  EnumColorPixelya.index(bcl))
-                        # # target_matrix.set_pixel(tx, ty, EnumColorPixelya.index(bcl))
                         target_matrix.set_pixel(tx, ty, OwnEnumColor.Colors[bcl])
                         i += 1
 
@@ -179,7 +153,7 @@ async def get_area(canvas_id, canvas, x, y, w, h, interaction : discord.Interact
                 rank += 1
                 percentage = (rank/total)*100
                 percentageBar = "".join([':green_square:' for k in range(round(percentage/5))]+[':brown_square:' for k in range(20-round(percentage/5))])
-                await interaction.edit_original_response(content = f"<a:loading:1267469203103940673> Image processing {percentageBar}")  # : {percentage}% done.")
+                await interaction.edit_original_response(content = f"<a:loading:1267469203103940673> Image processing {percentageBar}")
         await asyncio.gather(*tasks)
         return target_matrix
 
@@ -302,15 +276,8 @@ class areaDownload(commands.Cog):
                 w = w - x + 1
                 h = h - y + 1
 
-            # EnumColorPixelya.getColors(canvas_infos)
-            # print("ENUM COLORS HERE")
-            # enumcolors = [ (elem.rgb, elem.index) for elem in EnumColorPixelya.ENUM ]
-            # print(enumcolors)
             OwnEnumColor.getColors(canvas_infos)
-            # print("OWN COLORS DOWN THERE §§§")
-            # print(OwnEnumColor.Colors)
-            # print("EXAMPLE")
-            # print(OwnEnumColor.Colors[0])
+
             matrix = await get_area(canvas_id, canvas_infos, x, y, w, h, interaction)
 
             image = await matrix.create_image() # ? send PIL image
