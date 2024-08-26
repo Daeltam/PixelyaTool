@@ -188,8 +188,6 @@ class historyDownload(commands.Cog):
     @group.command(name = "infos", description = r"Information on how to use `/history download`")
     async def info_history_download(self, interaction : discord.Interaction):
         print(f"information comment send by {interaction.user}")
-        if interaction.user.id != 1094995425326542898 :
-            await interaction.response.send_message("This command is still Work In Progress, you will be notified when released to the public.")
         apime = await fetchMe()
         informations = discord.Embed(
             title="Download all tiles of an area of pixelya between two dates",
