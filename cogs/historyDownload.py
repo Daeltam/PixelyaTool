@@ -271,6 +271,7 @@ class historyDownload(commands.Cog):
             y = int(start[1])
             w = int(end[0]) - x + 1
             h = int(end[1]) - y + 1
+            print(end_date)
             await get_area(canvas_id, canvas_infos, x, y, w, h, start_date, end_date, thread) # SEND IMAGE IN GET_AREA
             await thread.send(f"{interaction.user.mention}, your images are here !")
             print("Download completed !")
