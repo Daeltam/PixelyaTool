@@ -206,6 +206,8 @@ class historyDownload(commands.Cog):
 
         informations.add_field(name = "Result", value = "The bot will send you the result as several image in a thread under the command. If it doesn't work and you have made no mistakes, please make a bug report in the dedicated thread of this channel", inline = False)
 
+        informations.add_field(name = "Warning !", value = "Due to the limitations of the server on which the bot is hosted, downloading takes time. Around 15minutes/day downloaded, depending on how bit you are downloading too. Sowwo, can't do more", inline = False)
+
         informations.set_author(name=self.bot.user.display_name, url = "https://github.com/Daeltam/PyfDownloadTool", icon_url=self.bot.user.avatar)
         informations.set_footer(text = "Informations about /history Download")
 
