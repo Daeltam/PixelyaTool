@@ -68,7 +68,7 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread):
     canvas_size = canvas["size"]
     bkg = tuple(canvas['colors'][0])
     delta = datetime.timedelta(days=1)
-    end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')#.strftime("%Y%m%d")
+    end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').strftime("%Y%m%d")
     iter_date = None
     cnt = 0
     #frames = []
@@ -108,7 +108,7 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread):
 
             clr = image.getcolors(1)
             if clr is not None:
-                #print("Got faulty full-backup frame, using last frame from previous day instead.")
+                print("Got faulty full-backup frame, using last frame from previous day instead.")
                 image = previous_day.copy()
             cnt += 1
 
@@ -233,7 +233,6 @@ class historyDownload(commands.Cog):
         print(f"downloadArea called by {interaction.user}")
         await interaction.response.send_message("<a:loading:1267469203103940673> Your image is being processed, please wait")
         thread : discord.Thread
-        print(privacy)
         if privacy.value == 1 :
             thread = await interaction.channel.create_thread(
                 name = f"{interaction.user.name}'s History download on {datetime.date.today()}",
