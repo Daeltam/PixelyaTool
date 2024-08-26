@@ -275,7 +275,7 @@ class historyDownload(commands.Cog):
             await get_area(canvas_id, canvas_infos, x, y, w, h, start_date, end_date, thread) # SEND IMAGE IN GET_AREA
             await thread.send(f"{interaction.user.mention}, your images are here !")
             print("Download completed !")
-            return await interaction.edit_original_response(content = f"@silent <a:shiny:1267483837148037190> {interaction.user.mention} Your images are ready, thank you for waiting ! You can find them here : {thread.mention} ")
+            return await interaction.edit_original_response(content = f"<a:shiny:1267483837148037190> {interaction.user.mention} Your images are ready, thank you for waiting ! You can find them here : {thread.mention} ", silent = True)
         except Exception:
             print(traceback.print_exc())
             await interaction.edit_original_response(content = "<a:error40:1267490066125819907> Something went wrong, your image will not be delivered, please report a bug in the dedicated thread.")
