@@ -69,6 +69,7 @@ async def fetch(session, url, offx, offy, image, bkg, needed = False):
 
 async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread, form):
     list_gif = []
+    gifilename = "%s.gif"%(thread.name)
     canvas_size = canvas["size"]
     bkg = tuple(canvas['colors'][0])
     delta = datetime.timedelta(days=1)
@@ -155,7 +156,7 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread, 
                         offy = iy * 256 + offset - y
                         tasks.append(fetch(session, url, offx, offy, image_rel, bkg))
                 await asyncio.gather(*tasks)
-                print('Got data from time %s' % (time))
+                # print('Got data from time %s' % (time))
                 cnt += 1
                 image_rel_binary = io.BytesIO() # ? WORKS ?
                 image_rel.save(image_rel_binary, 'PNG')
@@ -170,9 +171,9 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread, 
                     previous_day.close()
                     previous_day = image_rel.copy();
     if len(list_gif) != 0 :
-        gif = list_gif[0].save("output/%s.gif" %(thread.name), save_all = True, append_images = list_gif[1:], optimize=False, loop=0)
-        await thread.send("Final Gif image :", file = discord.File("output/Timelapse.gif"))
-        subprocess.run('rm output/%s.gif'%(thread.name), shell = True)
+        gif = list_gif[0].save(gifilename, save_all = True, append_images = list_gif[1:], optimize=False, loop=0)
+        await thread.send("Final Gif image :", file = discord.File(gifilename))
+        subprocess.run(['rm', gifilename])
 
 
 class historyDownload(commands.Cog):
@@ -292,12 +293,14 @@ class historyDownload(commands.Cog):
                 else:
                     end_date = datetime.date.fromisoformat(end_date)
             except :
-                error_message= "<a:error40:1267490066125819907> Your date format is wrong and created an error, please make ture to use the YYYY-MM-DD format."
+                error_message= "<a:error40:1267490066125819907> Your date format is wrong and created an error, please make sure to use the YYYY-MM-DD format."
                 await interaction.edit_original_response(error_message)
             x = int(start[0])
             y = int(start[1])
             w = int(end[0]) - x + 1
             h = int(end[1]) - y + 1
+
+            # subprocess.run("echo >  %s.gif"%(thread.name))
             await get_area(canvas_id, canvas_infos, x, y, w, h, start_date, end_date, thread, form.value) # SEND IMAGE IN GET_AREA
             await thread.send(f"{interaction.user.mention}, your images are here !")
             print("Download completed !")
