@@ -267,7 +267,7 @@ class historyDownload(commands.Cog):
                     end_date = datetime.date.fromisoformat(end_date)
             except :
                 error_message= "<a:error40:1267490066125819907> Your date format is wrong and created an error, please make ture to use the YYYY-MM-DD format."
-                await interaction.edit_original_response(error_message)
+                await interaction.edit_original_response(content = error_message)
             x = int(start[0])
             y = int(start[1])
             w = int(end[0]) - x + 1
