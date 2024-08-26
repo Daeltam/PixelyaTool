@@ -10,6 +10,7 @@ import asyncio
 import aiohttp
 import nest_asyncio, datetime
 import traceback
+import subprocess
 nest_asyncio.apply()
 
 USER_AGENT = "pyf areaDownload 1.0 0 -1_-1 1_1 2024-07-13 2024-07-14"
@@ -49,6 +50,7 @@ async def fetch(session, url, offx, offy, image, bkg, needed = False):
                     if needed:
                         img = PIL.Image.new('RGB', (256, 256), color=bkg)
                         image.paste(img, (offx, offy))
+                        # img.close()
                     return
                 if resp.status != 200:
                     if needed:
@@ -57,6 +59,7 @@ async def fetch(session, url, offx, offy, image, bkg, needed = False):
                 data = await resp.read()
                 img = PIL.Image.open(io.BytesIO(data)).convert('RGBA')
                 image.paste(img, (offx, offy), img)
+                # img.close()
                 return
         except:
             if attempts > 3:
@@ -64,14 +67,14 @@ async def fetch(session, url, offx, offy, image, bkg, needed = False):
             attempts += 1
             pass
 
-async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread):
+async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread, form):
+    list_gif = []
     canvas_size = canvas["size"]
     bkg = tuple(canvas['colors'][0])
     delta = datetime.timedelta(days=1)
-    end_date = end_date.strftime("%Y%m%d")   
+    end_date = end_date.strftime("%Y%m%d")
     iter_date = None
     cnt = 0
-    #frames = []
     previous_day = PIL.Image.new('RGB', (w, h), color=bkg)
     while iter_date != end_date:
         iter_date = start_date.strftime("%Y%m%d")
@@ -108,14 +111,18 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread):
 
             clr = image.getcolors(1)
             if clr is not None:
-                print("Got faulty full-backup frame, using last frame from previous day instead.")
+                #print("Got faulty full-backup frame, using last frame from previous day instead.")
                 image = previous_day.copy()
             cnt += 1
 
             image_binary = io.BytesIO()
             image.save(image_binary, 'PNG')
             image_binary.seek(0)
-            await thread.send(f"Frame number {cnt}", file = discord.File(fp = image_binary, filename = "Frame%s.png"%(cnt)))
+            if form == "img" :
+                await thread.send(f"Frame number {cnt}", file = discord.File(fp = image_binary, filename = "Frame%s.png"%(cnt)))
+            elif form == "gif" :
+                list_gif.append(image)
+
             headers = {
                 'User-Agent': USER_AGENT
             }
@@ -150,17 +157,23 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread):
                 await asyncio.gather(*tasks)
                 print('Got data from time %s' % (time))
                 cnt += 1
-                image_rel_binary = io.BytesIO()
+                image_rel_binary = io.BytesIO() # ? WORKS ?
                 image_rel.save(image_rel_binary, 'PNG')
                 image_rel_binary.seek(0)
-                await thread.send(f"Frame number {cnt}", file = discord.File(fp = image_rel_binary, filename = "Frame%s.png"%(cnt)))
+                if form == "img" :
+                    await thread.send(f"Frame number {cnt}", file = discord.File(fp = image_rel_binary, filename = "Frame%s.png"%(cnt)))
+                elif form == "gif" :
+                    list_gif.append(image_rel)
+
                 if time == time_list[-1]:
 
                     previous_day.close()
                     previous_day = image_rel.copy();
-                image_rel.close()
-            image.close()
-    previous_day.close()
+    if len(list_gif) != 0 :
+        gif = list_gif[0].save("output/%s.gif" %(thread.name), save_all = True, append_images = list_gif[1:], optimize=False, loop=0)
+        await thread.send("Final Gif image :", file = discord.File("output/Timelapse.gif"))
+        subprocess.run('rm output/%s.gif'%(thread.name), shell = True)
+
 
 class historyDownload(commands.Cog):
     def __init__(self, bot : commands.Bot) -> None:
@@ -188,6 +201,8 @@ class historyDownload(commands.Cog):
     @group.command(name = "infos", description = r"Information on how to use `/history download`")
     async def info_history_download(self, interaction : discord.Interaction):
         print(f"information comment send by {interaction.user}")
+        if interaction.user.id != 1094995425326542898 :
+            await interaction.response.send_message("This command is still Work In Progress, you will be notified when released to the public.")
         apime = await fetchMe()
         informations = discord.Embed(
             title="Download all tiles of an area of pixelya between two dates",
@@ -206,21 +221,26 @@ class historyDownload(commands.Cog):
 
         informations.add_field(name = "Result", value = "The bot will send you the result as several image in a thread under the command. If it doesn't work and you have made no mistakes, please make a bug report in the dedicated thread of this channel", inline = False)
 
-        informations.add_field(name = "Warning !", value = "Due to the limitations of the server on which the bot is hosted, downloading takes time. Around 15minutes/day downloaded, depending on how bit you are downloading too. Sowwo, can't do more", inline = False)
-
         informations.set_author(name=self.bot.user.display_name, url = "https://github.com/Daeltam/PyfDownloadTool", icon_url=self.bot.user.avatar)
         informations.set_footer(text = "Informations about /history Download")
 
         return await interaction.response.send_message(embed=informations)
     
     mapsEnum = Enum('maps', canvas)
-    @app_commands.choices(privacy = [app_commands.Choice(name = "Private", value = 0), app_commands.Choice(name = "Public", value = 1)])
+    @app_commands.choices(
+                        privacy = [app_commands.Choice(name = "Private", value = 0), 
+                                     app_commands.Choice(name = "Public", value = 1)],
+                        form = [app_commands.Choice(name = "Several Images", value = "img"),
+                                  app_commands.Choice(name = "Gif file", value = "gif"),
+                                  app_commands.Choice(name = "Video file", value = "vid")]
+                        )
     @group.command(name = "download", description = "Sends the pixelya maps between two coordinates and two dates in a thread.")
     @app_commands.describe(maps = "Map from which you want to download the image",
                            startx_starty = "Top left coordinates in the good format",
                            endx_endy = "Bottom right coordinates in the good format",
                            start_date = "Starting date in the YYYY-MM-DD format",
                            end_date = "Ending date in the YYYY-MM-DD format, automatically set as today",
+                           form = "Wether you want it to be shown as several images, a gif file or a video file",
                            privacy = "Defines if the images will be sent in a public or a private thread. You will be pentionned in the private thread when all the images will be finished")
     async def download_area(self,
                             interaction : discord.Interaction, 
@@ -229,11 +249,16 @@ class historyDownload(commands.Cog):
                             endx_endy : str, 
                             start_date : str, 
                             end_date : str = "today", 
+                            form : app_commands.Choice[str] = "gif",
                             privacy : app_commands.Choice[int] = 0):
         global USER_AGENT
         USER_AGENT = "pyf areaDownload 1.0 " + maps.value + " " + startx_starty + " " + endx_endy + " " + start_date + " " + end_date
         print(f"downloadArea called by {interaction.user}")
         await interaction.response.send_message("<a:loading:1267469203103940673> Your image is being processed, please wait")
+
+        if form.value == "vid":
+            return await interaction.edit_original_response(content = "Video file is not available yet, only gif and frame format. Sorry for the inconvenience")
+
         thread : discord.Thread
         if privacy.value == 1 :
             thread = await interaction.channel.create_thread(
@@ -268,16 +293,15 @@ class historyDownload(commands.Cog):
                     end_date = datetime.date.fromisoformat(end_date)
             except :
                 error_message= "<a:error40:1267490066125819907> Your date format is wrong and created an error, please make ture to use the YYYY-MM-DD format."
-                await interaction.edit_original_response(content = error_message)
+                await interaction.edit_original_response(error_message)
             x = int(start[0])
             y = int(start[1])
             w = int(end[0]) - x + 1
             h = int(end[1]) - y + 1
-            print(end_date)
-            await get_area(canvas_id, canvas_infos, x, y, w, h, start_date, end_date, thread) # SEND IMAGE IN GET_AREA
+            await get_area(canvas_id, canvas_infos, x, y, w, h, start_date, end_date, thread, form.value) # SEND IMAGE IN GET_AREA
             await thread.send(f"{interaction.user.mention}, your images are here !")
             print("Download completed !")
-            return await interaction.edit_original_response(content = f"<a:shiny:1267483837148037190> {interaction.user.mention} Your images are ready, thank you for waiting ! You can find them here : {thread.mention} ", silent = True)
+            return await interaction.edit_original_response(content = f"<a:shiny:1267483837148037190> {interaction.user.mention} Your images are ready, thank you for waiting ! You can find them here : {thread.mention} ")
         except Exception:
             print(traceback.print_exc())
             await interaction.edit_original_response(content = "<a:error40:1267490066125819907> Something went wrong, your image will not be delivered, please report a bug in the dedicated thread.")
