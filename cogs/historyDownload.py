@@ -68,7 +68,7 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread):
     canvas_size = canvas["size"]
     bkg = tuple(canvas['colors'][0])
     delta = datetime.timedelta(days=1)
-    end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').strftime("%Y%m%d")
+    end_date = end_date.strftime("%Y%m%d")   
     iter_date = None
     cnt = 0
     #frames = []
