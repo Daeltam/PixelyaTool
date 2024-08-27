@@ -6,12 +6,10 @@ from enum import Enum
 import PIL.Image
 import sys, io, os
 import datetime
-import asyncio
-import aiohttp
+import asyncio, aiohttp
 import nest_asyncio, datetime
-import traceback
-import logging
-import subprocess
+import traceback, logging
+import subprocess, platform
 nest_asyncio.apply()
 logging.basicConfig(filename = "historyDownload.log", level = logging.INFO, format = "%(asctime)s:%(levelname)s:%(message)s")
 
@@ -176,7 +174,10 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread, 
     if len(list_gif) != 0 :
         gif = list_gif[0].save(gifilename, save_all = True, append_images = list_gif[1:], optimize=False, loop=0)
         await thread.send("Final Gif image :", file = discord.File(gifilename))
-        subprocess.run(['rm', gifilename])
+        if platform.system() == "Linux" :
+            subprocess.run(['rm', gifilename])
+        elif platform.system() == "Windows":
+            subprocess.run(['del',gifilename])
 
 
 class historyDownload(commands.Cog):

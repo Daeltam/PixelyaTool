@@ -12,6 +12,7 @@ import logging
 from enum import Enum
 nest_asyncio.apply()
 logging.basicConfig(filename = "areaDownload.log", level = logging.INFO, format = "%(asctime)s:%(levelname)s:%(message)s")
+
 USER_AGENT = "pyf areaDownload 1.0 0 -1_-1 1_1"
 PYF_URL = "https://pixelya.fun"
 
