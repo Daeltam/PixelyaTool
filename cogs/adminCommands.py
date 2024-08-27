@@ -2,9 +2,10 @@ import discord
 from discord.ext import commands
 import datetime
 import asyncio
+import logging
 from typing import Literal, Optional
 import nest_asyncio
-
+logging.basicConfig(filename = "adminCommands.log", level = logging.INFO, format = "%(asctime)s:%(levelname)s:%(message)s")
 nest_asyncio.apply()
 
 class AdminCommands(commands.Cog):
@@ -13,6 +14,7 @@ class AdminCommands(commands.Cog):
 
     @commands.Cog.listener(name="on_ready")
     async def CogLoaded(self) -> None:
+        logging.info("Admin Commands Cog loaded")
         return print("Admin Commands Cog loaded")
     
     @commands.command()
@@ -28,7 +30,7 @@ class AdminCommands(commands.Cog):
     @commands.is_owner()
     async def sync(self, ctx: commands.Context, guilds: commands.Greedy[discord.Object], spec: Optional[Literal["~", "*", "^"]] = None) -> None:
         """Syncronize commands : https://about.abstractumbra.dev/discord.py/2023/01/29/sync-command-example.html : link to the function"""
-        print(f"Sync command called : !sync{spec}")
+        logging.info(f"Sync command called : !sync{spec} by {ctx.author}")
         if not guilds:
             if spec == "~":
                 synced = await ctx.bot.tree.sync(guild=ctx.guild)
@@ -74,6 +76,8 @@ class AdminCommands(commands.Cog):
 
         if channel is None:
             channel = ctx.channel
+
+        logging.info("%s has modified %s's slowmode to %s seconds"%(ctx.author, channel.name, seconds))
 
         if seconds==0:
             await channel.edit(slowmode_delay=0)

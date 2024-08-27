@@ -10,8 +10,10 @@ import asyncio
 import aiohttp
 import nest_asyncio, datetime
 import traceback
+import logging
 import subprocess
 nest_asyncio.apply()
+logging.basicConfig(filename = "historyDownload.log", level = logging.INFO, format = "%(asctime)s:%(levelname)s:%(message)s")
 
 USER_AGENT = "pyf areaDownload 1.0 0 -1_-1 1_1 2024-07-13 2024-07-14"
 PYF_URL = "https://pixelya.fun"
@@ -31,10 +33,10 @@ async def fetchMe():
                     return data
             except:
                 if attempts > 3:
-                    print(f"Could not get {url} in three tries, cancelling")
+                    logging.warning(f"Could not get {url} in three tries, cancelling")
                     raise
                 attempts += 1
-                print(f"Failed to load {url}, trying again in 5s")
+                logging.warning(f"Failed to load {url}, trying again in 5s")
                 await asyncio.sleep(5)
                 pass
             
@@ -79,8 +81,8 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread, 
     previous_day = PIL.Image.new('RGB', (w, h), color=bkg)
     while iter_date != end_date:
         iter_date = start_date.strftime("%Y%m%d")
-        print('------------------------------------------------')
-        print('Getting data for date %s' % (iter_date))
+        logging.debug('------------------------------------------------')
+        logging.debug('Getting data for date %s' % (iter_date))
         start_date = start_date + delta
 
         fetch_canvas_size = canvas_size
@@ -96,7 +98,7 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread, 
         wc = (x + w - offset) // 256
         yc = (y - offset) // 256
         hc = (y + h - offset) // 256
-        #print("Load from %s / %s to %s / %s with canvas size %s" % (xc, yc, wc + 1, hc + 1, fetch_canvas_size))
+        logging.debug("Load from %s / %s to %s / %s with canvas size %s" % (xc, yc, wc + 1, hc + 1, fetch_canvas_size))
 
         tasks = []
         async with aiohttp.ClientSession() as session:
@@ -108,11 +110,11 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread, 
                     offy = iy * 256 + offset - y
                     tasks.append(fetch(session, url, offx, offy, image, bkg, True))
             await asyncio.gather(*tasks)
-            #print('Got start of day')
+            logging.debug('Got start of day')
 
             clr = image.getcolors(1)
             if clr is not None:
-                #print("Got faulty full-backup frame, using last frame from previous day instead.")
+                logging.debug("Got faulty full-backup frame, using last frame from previous day instead.")
                 image = previous_day.copy()
             cnt += 1
 
@@ -129,7 +131,8 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread, 
             }
             while True:
                 if int(iter_date) < 20240724: # Pixelya does not have any data to dates prior this.
-                    print(f"\nSeems like you selected a date before 2024/07/24, therefore the script can't run because Pixelya does not have any data prior to the date 2024/07/24.\n")
+                    logging.debug("Pixelya does not have any data to dates prior this.")
+                    thread.send(f"\nSeems like you selected a date before 2024/07/24, therefore the script can't run because Pixelya does not have any data prior to the date 2024/07/24.\n")
                     return
                 if iter_date =="20240112" or iter_date == "20240111": # Pixelya does not have any data for these dates too.
                     break
@@ -139,7 +142,7 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread, 
                         time_list = await resp.json()
                         break
                     except:
-                        print('Couldn\'t decode json for day %s, trying again' % (iter_date))
+                        logging.warning('Couldn\'t decode json for day %s, trying again' % (iter_date))
             i = 0
             for time in time_list:
                 i += 1
@@ -156,7 +159,7 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread, 
                         offy = iy * 256 + offset - y
                         tasks.append(fetch(session, url, offx, offy, image_rel, bkg))
                 await asyncio.gather(*tasks)
-                # print('Got data from time %s' % (time))
+                logging.debug('Got data from time %s' % (time))
                 cnt += 1
                 image_rel_binary = io.BytesIO() # ? WORKS ?
                 image_rel.save(image_rel_binary, 'PNG')
@@ -182,6 +185,7 @@ class historyDownload(commands.Cog):
 
     @commands.Cog.listener(name="on_ready")
     async def CogLoaded(self) -> None:
+        logging.info("history Download Cog loaded")
         return print("historyDownload Cog loaded")
     
     group = app_commands.Group(name="history", description="Area Download related commands")
@@ -191,17 +195,17 @@ class historyDownload(commands.Cog):
     async def refreshing_canvas_list(self, interaction : discord.Interaction):
         if not interaction.user.guild_permissions.administrator :
             return await interaction.response.send_message("You do not have the permissions to use this command")
-        print(f"{interaction.user} has reloaded the canvas list")
+        logging.info(f"{interaction.user} has reloaded the canvas list")
         apime = await fetchMe()
         canvases = apime['canvases'].items()
         global canvas
         canvas = { can[1]['title'] :can[0]  for can in canvases}
-        print(canvas)
+        logging.debug(canvas)
         return await interaction.response.send_message(f"Canvases list has been updated : {canvas}")
 
     @group.command(name = "infos", description = r"Information on how to use `/history download`")
     async def info_history_download(self, interaction : discord.Interaction):
-        print(f"information comment send by {interaction.user}")
+        logging.info(f"information comment send by {interaction.user}")
         if interaction.user.id != 1094995425326542898 :
             await interaction.response.send_message("This command is still Work In Progress, you will be notified when released to the public.")
         apime = await fetchMe()
@@ -254,7 +258,7 @@ class historyDownload(commands.Cog):
                             privacy : app_commands.Choice[int] = 0):
         global USER_AGENT
         USER_AGENT = "pyf areaDownload 1.0 " + maps.value + " " + startx_starty + " " + endx_endy + " " + start_date + " " + end_date
-        print(f"downloadArea called by {interaction.user}")
+        logging.info(f"downloadArea called by {interaction.user} with parameters : {startx_starty},{endx_endy}, {start_date},{end_date}, {form}")
         await interaction.response.send_message("<a:loading:1267469203103940673> Your image is being processed, please wait")
 
         if form.value == "vid":
@@ -307,6 +311,7 @@ class historyDownload(commands.Cog):
             return await interaction.edit_original_response(content = f"<a:shiny:1267483837148037190> {interaction.user.mention} Your images are ready, thank you for waiting ! You can find them here : {thread.mention} ")
         except Exception:
             print(traceback.print_exc())
+            logging.exception(f'Exception when running /area Download')
             await interaction.edit_original_response(content = "<a:error40:1267490066125819907> Something went wrong, your image will not be delivered, please report a bug in the dedicated thread.")
 
 async def setup(bot):

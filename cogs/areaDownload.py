@@ -8,9 +8,10 @@ import asyncio
 import traceback
 import aiohttp
 import nest_asyncio, datetime
+import logging
 from enum import Enum
 nest_asyncio.apply()
-
+logging.basicConfig(filename = "areaDownload.log", level = logging.INFO, format = "%(asctime)s:%(levelname)s:%(message)s")
 USER_AGENT = "pyf areaDownload 1.0 0 -1_-1 1_1"
 PYF_URL = "https://pixelya.fun"
 
@@ -87,10 +88,10 @@ async def fetchMe():
                     return data
             except:
                 if attempts > 3:
-                    print(f"Could not get {url} in three tries, cancelling")
+                    logging.warning(f"Could not get {url} in three tries, cancelling")
                     raise
                 attempts += 1
-                print(f"Failed to load {url}, trying again in 5s")
+                logging.warning(f"Failed to load {url}, trying again in 5s")
                 await asyncio.sleep(5)
                 pass
 
@@ -122,14 +123,14 @@ async def fetch(session, canvas_id, canvasoffset, ix, iy, target_matrix):
                         target_matrix.set_pixel(tx, ty, OwnEnumColor.Colors[bcl])
                         i += 1
 
-                print(f"Downloaded a new chunk from {url}")
+                logging.debug(f"Downloaded a new chunk from {url}")
                 break
         except:
             if attempts > 3:
-                print(f"Could not get {url} in three tries, cancelling")
+                logging.warning(f"Could not get {url} in three tries, cancelling")
                 raise
             attempts += 1
-            print(f"Failed to load {url}, trying again in 3s")
+            logging.warning(f"Failed to load {url}, trying again in 3s")
             await asyncio.sleep(3)
             pass
 
@@ -142,7 +143,7 @@ async def get_area(canvas_id, canvas, x, y, w, h, interaction : discord.Interact
     wc = (x + w - offset) // 256
     yc = (y - offset) // 256
     hc = (y + h - offset) // 256
-    print(f"Loading from {xc} / {yc} to {wc + 1} / {hc + 1}")
+    logging.debug(f"Loading from {xc} / {yc} to {wc + 1} / {hc + 1}")
     tasks = []
     async with aiohttp.ClientSession() as session:
         total = (hc + 1 - yc)*(wc + 1 - xc)
@@ -206,6 +207,7 @@ class areaDownload(commands.Cog):
 
     @commands.Cog.listener(name="on_ready")
     async def CogLoaded(self) -> None:
+        logging.info("areaDownload Cog loaded")
         return print("areaDownload Cog loaded")
     
     group = app_commands.Group(name="area", description="Area Download related commands")
@@ -215,17 +217,17 @@ class areaDownload(commands.Cog):
     async def refreshing_canvas_list(self, interaction : discord.Interaction):
         if not interaction.user.guild_permissions.administrator :
             return await interaction.response.send_message("You do not have the permissions to use this command")
-        print(f"{interaction.user} has reloaded the canvas list")
+        logging.info(f"{interaction.user} has reloaded the canvas list")
         apime = await fetchMe()
         canvases = apime['canvases'].items()
         global canvas
         canvas = { can[1]['title'] :can[0]  for can in canvases}
-        print(canvas)
+        logging.debug(canvas)
         return await interaction.response.send_message(f"Canvases list has been updated : {canvas}")
 
     @group.command(name = "infos", description = r"Information on how to use `/area download`")
     async def info_area_download(self, interaction : discord.Interaction):
-        print(f"information comment send by {interaction.user}")
+        logging.info(f"information comment send by {interaction.user}")
         apime = await fetchMe()
         informations = discord.Embed(
             title="Download an area of pixelya",
@@ -257,7 +259,7 @@ class areaDownload(commands.Cog):
     async def download_area(self, interaction : discord.Interaction, maps : mapsEnum, startx_starty : str, endx_endy : str):
         global USER_AGENT
         USER_AGENT = "pyf areaDownload 1.0 " + maps.value + " " + startx_starty + " " + endx_endy
-        print(f"downloadArea called by {interaction.user}")
+        logging.info(f"downloadArea called by {interaction.user}")
         await interaction.response.send_message("<a:loading:1267469203103940673> Your image is being processed, please wait")
         try : 
             apime = await fetchMe()
@@ -285,6 +287,7 @@ class areaDownload(commands.Cog):
             await interaction.channel.send(file = discord.File(fp=image, filename = "result.png"))
         except Exception:
             traceback.print_exc()
+            logging.exception('Exception when running /area Download')
             thread = self.bot.get_channel(1268162950485512272)
             error_message = f"<a:error40:1267490066125819907> Something went wrong, your image will not be delivered, please report a bug in the dedicated thread : {thread.mention}"
             await interaction.edit_original_response(content = error_message)

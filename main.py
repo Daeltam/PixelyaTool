@@ -4,11 +4,15 @@ import discord
 import Token
 from enum import Enum
 from discord.ext import commands
+import logging
 discord.utils.setup_logging()
+logging.basicConfig(filename = "main.log", level = logging.INFO, format = "%(asctime)s:%(levelname)s:%(message)s")
+
 
 class Bot(commands.Bot):
     async def setup_hook(self):
         print(f"Logged in as: {self.user}")
+        logging.info(f"Logged in as: {self.user}")
         # Load extensions here
         await load()
 bot = Bot(command_prefix="pyd ", intents= discord.Intents.all(), activity=discord.Activity(type=discord.ActivityType.listening, name="your commands"))
@@ -23,7 +27,7 @@ async def load():
 @commands.is_owner()
 async def reloading(ctx : commands.Context, *, module : str):
     """Reloads a module"""
-    print(f"trying to reload {module}")
+    logging.info(f"trying to reload {module}")
     if (module + ".py" not in os.listdir("cogs")) and module != " all " :
         dirs = os.listdir('cogs')
         await ctx.send(f"This module doesn't exist, here is the list of modules : {dirs}") 
