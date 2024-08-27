@@ -185,8 +185,7 @@ class historyDownload(commands.Cog):
 
     @commands.Cog.listener(name="on_ready")
     async def CogLoaded(self) -> None:
-        logging.info("history Download Cog loaded")
-        return print("historyDownload Cog loaded")
+        return logging.info("history Download Cog loaded")
     
     group = app_commands.Group(name="history", description="Area Download related commands")
 
@@ -296,9 +295,11 @@ class historyDownload(commands.Cog):
                     end_date = datetime.date.today()
                 else:
                     end_date = datetime.date.fromisoformat(end_date)
+                if end_date > start_date:
+                    interaction.edit_original_response(content = "your end date is prior to your start date, this won't work.")
             except :
                 error_message= "<a:error40:1267490066125819907> Your date format is wrong and created an error, please make sure to use the YYYY-MM-DD format."
-                await interaction.edit_original_response(error_message)
+                return await interaction.edit_original_response(content = error_message)
             x = int(start[0])
             y = int(start[1])
             w = int(end[0]) - x + 1
@@ -307,6 +308,7 @@ class historyDownload(commands.Cog):
             # subprocess.run("echo >  %s.gif"%(thread.name))
             await get_area(canvas_id, canvas_infos, x, y, w, h, start_date, end_date, thread, form.value) # SEND IMAGE IN GET_AREA
             await thread.send(f"{interaction.user.mention}, your images are here !")
+            logging.info("Download completed !")
             print("Download completed !")
             return await interaction.edit_original_response(content = f"<a:shiny:1267483837148037190> {interaction.user.mention} Your images are ready, thank you for waiting ! You can find them here : {thread.mention} ")
         except Exception:

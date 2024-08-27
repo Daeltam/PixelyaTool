@@ -14,9 +14,8 @@ class AdminCommands(commands.Cog):
 
     @commands.Cog.listener(name="on_ready")
     async def CogLoaded(self) -> None:
-        logging.info("Admin Commands Cog loaded")
-        return print("Admin Commands Cog loaded")
-    
+        return logging.info("Admin Commands Cog loaded")
+        
     @commands.command()
     @commands.is_owner()
     async def shutdown(self, ctx : commands.Context):

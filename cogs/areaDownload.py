@@ -207,8 +207,7 @@ class areaDownload(commands.Cog):
 
     @commands.Cog.listener(name="on_ready")
     async def CogLoaded(self) -> None:
-        logging.info("areaDownload Cog loaded")
-        return print("areaDownload Cog loaded")
+        return logging.info("areaDownload Cog loaded")
     
     group = app_commands.Group(name="area", description="Area Download related commands")
 
