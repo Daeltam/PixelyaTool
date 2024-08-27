@@ -310,7 +310,11 @@ class historyDownload(commands.Cog):
             await thread.send(f"{interaction.user.mention}, your images are here !")
             logging.info("Download completed !")
             print("Download completed !")
-            return await interaction.edit_original_response(content = f"<a:shiny:1267483837148037190> {interaction.user.mention} Your images are ready, thank you for waiting ! You can find them here : {thread.mention} ")
+            try :
+                await interaction.edit_original_response(content = f"<a:shiny:1267483837148037190> {interaction.user.mention} Your images are ready, thank you for waiting ! You can find them here : {thread.mention} ")
+            except discord.app_commands.errors.CommandInvokeError:
+                await interaction.original_response().delete()
+                await interaction.channel.send(f"<a:shiny:1267483837148037190> {interaction.user.mention} Your images are ready, thank you for waiting ! You can find them here : {thread.mention} ", silent = True)
         except Exception:
             print(traceback.print_exc())
             logging.exception(f'Exception when running /area Download')
