@@ -257,7 +257,7 @@ class historyDownload(commands.Cog):
                             privacy : app_commands.Choice[int] = 0):
         global USER_AGENT
         USER_AGENT = "pyf areaDownload 1.0 " + maps.value + " " + startx_starty + " " + endx_endy + " " + start_date + " " + end_date
-        logging.info(f"downloadArea called by {interaction.user} with parameters : {startx_starty},{endx_endy}, {start_date},{end_date}, {form}")
+        logging.info(f"downloadArea called by {interaction.user} with parameters : {startx_starty},{endx_endy}, {start_date},{end_date}, {form.name}")
         await interaction.response.send_message("<a:loading:1267469203103940673> Your image is being processed, please wait")
 
         if form.value == "vid":
