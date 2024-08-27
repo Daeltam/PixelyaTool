@@ -296,7 +296,7 @@ class historyDownload(commands.Cog):
                 else:
                     end_date = datetime.date.fromisoformat(end_date)
                 if end_date > start_date:
-                    interaction.edit_original_response(content = "your end date is prior to your start date, this won't work.")
+                    return await interaction.edit_original_response(content = "your end date is prior to your start date, this won't work.")
             except :
                 error_message= "<a:error40:1267490066125819907> Your date format is wrong and created an error, please make sure to use the YYYY-MM-DD format."
                 return await interaction.edit_original_response(content = error_message)
