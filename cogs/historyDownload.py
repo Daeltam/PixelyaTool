@@ -172,7 +172,7 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread, 
                     previous_day.close()
                     previous_day = image_rel.copy();
     if len(list_gif) != 0 :
-        gif = list_gif[0].save(gifilename, save_all = True, append_images = list_gif[1:], optimize=False, loop=0)
+        gif = list_gif[0].save(gifilename, save_all = True, append_images = list_gif[1:], optimize=True, loop=0)
         await thread.send("Final Gif image :", file = discord.File(gifilename))
         if platform.system() == "Linux" :
             subprocess.run(['rm', gifilename])
