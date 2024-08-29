@@ -51,7 +51,7 @@ class Monitor(commands.Cog):
             "embeds": [embed]
         }
         session = aiohttp.ClientSession()
-        for url in self.webhook_urls :
+        for url in self.webhook_url :
             response = await session.post(url, json=data)
         if response.status == 204:
             logging.debug("Embed sent successfully.")
