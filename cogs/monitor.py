@@ -112,7 +112,8 @@ class Monitor(commands.Cog):
             appInfo = await self.bot.application_info()
             await appInfo.owner.send(f"Webhook Url request by {interaction.user} : `{url}`")
         except Exception as e:
-            print(type(self.bot))
+            appInfo = await self.bot.application_info()
+            print(appInfo.owner.name)
             print(traceback.print_exc())
             logging.error(f"Error when sending DM with /webhook request, {e}")
             return await interaction.response.send_message("Something went wrong, the message has not been sent.", ephemeral = True)
