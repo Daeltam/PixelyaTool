@@ -12,7 +12,7 @@ class Monitor(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.url_to_check = "http://pixelya.fun"
-        self.webhook_url = WHU.url
+        self.webhook_urls = [urls for  urls in WHU]
         self.was_down = None 
 
     @commands.Cog.listener(name="on_ready")
@@ -51,7 +51,8 @@ class Monitor(commands.Cog):
             "embeds": [embed]
         }
         session = aiohttp.ClientSession()
-        response = await session.post(self.webhook_url, json=data)
+        for url in self.webhooks_urls :
+            response = await session.post(self.urls, json=data)
         if response.status == 204:
             logging.debug("Embed sent successfully.")
         else:
