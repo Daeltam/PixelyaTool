@@ -109,8 +109,8 @@ class Monitor(commands.Cog):
     async def webhook_request(self, interaction : discord.Interaction, url : str):
         logging.info(f"{interaction.user} is sending {url}")
         try:
-            appInfo = await self.bot.application_info()
-            await appInfo.team.owner.send(f"Webhook Url request by {interaction.user} : `{url}`")
+            me  = self.bot.get_user(1094995425326542898)
+            await me.send(f"Webhook Url request by {interaction.user} : `{url}`")
         except Exception as e:
             appInfo = await self.bot.application_info()
             print(appInfo.owner.name)
