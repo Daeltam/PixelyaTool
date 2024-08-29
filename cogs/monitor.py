@@ -110,7 +110,7 @@ class Monitor(commands.Cog):
         logging.info(f"{interaction.user} is sending {url}")
         try:
             appInfo = await self.bot.application_info()
-            await appInfo.owner.send(f"Webhook Url request by {interaction.user} : `{url}`")
+            await appInfo.team.owner.send(f"Webhook Url request by {interaction.user} : `{url}`")
         except Exception as e:
             appInfo = await self.bot.application_info()
             print(appInfo.owner.name)
