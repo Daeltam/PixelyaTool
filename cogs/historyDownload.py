@@ -128,12 +128,18 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread, 
                 'User-Agent': USER_AGENT
             }
             while True:
-                if int(iter_date) < 20240724: # Pixelya does not have any data to dates prior this.
+                if int(iter_date) < 20240724 and canvas_id == 5 : # Pixelya does not have any data to dates prior this. (world)
                     logging.debug("Pixelya does not have any data to dates prior this.")
-                    thread.send(f"\nSeems like you selected a date before 2024/07/24, therefore the script can't run because Pixelya does not have any data prior to the date 2024/07/24.\n")
-                    return
-                if iter_date =="20240112" or iter_date == "20240111": # Pixelya does not have any data for these dates too.
-                    break
+                    return await thread.send(f"\nSeems like you selected a date before 2024/07/24, therefore the script can't run because Pixelya does not have any data prior to this date on World canvas.\n")
+                elif int(iter_date) < 20240118 and canvas_id in[0, 1] : # Pixelya does not have any data for these dates too (miniworld, graffiti)
+                    logging.debug("Pixelya does not have any data to dates prior this.")
+                    return await thread.send(f"\nSeems like you selected a date before 2024/01/18, therefore the script can't run because Pixelya does not have any data prior to this date on miniworld and graffiti canvas.\n")
+                elif int(iter_date) < 20240720 and canvas_id == 6 : # Pixelya does not have any data for these dates too (top15)
+                    logging.debug("Pixelya does not have any data to dates prior this.")
+                    return await thread.send(f"\nSeems like you selected a date before 2024/07/20, therefore the script can't run because Pixelya does not have any data prior to this date in top15 canvas.\n")
+                elif canvas_id == 2 and (int(iter_date) <20240115 or int(iter_date) >20240701) : # football canvas
+                    logging.debug("Pixelya does not have any data to dates prior this.")
+                    return await thread.send(f"\nSeems like you selected a date before 2024/01/15 or after 2024/07/01, therefore the script can't run because Pixelya does not have any data outside these dates for footbal canvas (archived).\n")
 
                 async with session.get('%s/history?day=%s&id=%s' % (PYF_URL, iter_date, canvas_id), headers=headers) as resp:
                     try:
