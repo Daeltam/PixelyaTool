@@ -122,7 +122,7 @@ class RankingCommands(commands.Cog):
                 if response.status == 200:
                     data = await response.json()
 
-                    ranking_data = data.get("dailyCRanking", [])
+                    ranking_data = data.get("dailyCorRanking", [])
 
                     if not ranking_data:
                         await interaction.followup.send("No daily country rankings found.", ephemeral=True)
