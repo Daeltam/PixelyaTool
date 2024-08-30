@@ -108,12 +108,9 @@ class RankingCommands(commands.Cog):
                 else:
                     await interaction.followup.send("Failed to fetch rankings.", ephemeral=True)
 
-    @Rgroup.command(name="country", description="Display the top 10 daily country rankings by pixels.")
+    @Rgroup.command(name="country_daily", description="Display the top 10 daily country rankings by pixels.")
     async def country(self, interaction: discord.Interaction):
         """Fetch and display the top 10 daily country rankings in a table format."""
-        # ! Broken because of how the API is made
-        if interaction.user.id != 1094995425326542898 :
-            return await interaction.response.send_message("This command doesn't work due to the website API, we will notify when it will work but this might never happen", ephemeral=True)
         logging.info(f"{interaction.user} launched /ranking country")
         await interaction.response.defer()
 
@@ -150,6 +147,46 @@ class RankingCommands(commands.Cog):
                 else:
                     await interaction.followup.send("Failed to fetch country rankings.", ephemeral=True)
 
+    @Rgroup.command(name="country_total", description="Display the top 10 country rankings by pixels.")
+    async def country(self, interaction: discord.Interaction):
+        """Fetch and display the top 10 daily country rankings in a table format."""
+        logging.info(f"{interaction.user} launched /ranking country_total")
+        await interaction.response.defer()
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://pixelya.fun/ranking") as response:
+                if response.status == 200:
+                    data = await response.json()
+
+                    ranking_data = data.get("totalCountrieRanking", [])
+
+                    if not ranking_data:
+                        await interaction.followup.send("No country rankings found.", ephemeral=True)
+                        return
+
+                    top_10 = ranking_data[:10]
+
+                    embed = discord.Embed(
+                        title="Top 10 Country Rankings by Pixels",
+                        color=discord.Color.purple()
+                    )
+
+                    for entry in top_10:
+                        country_code = entry['cc'].upper()
+                        flag = "".join([chr(127397 + ord(c)) for c in country_code])
+                        pixels = str(entry['px']).replace(',', '')
+
+                        embed.add_field(
+                            name=f"{flag} {country_code}",
+                            value=f"**Pixels:** {pixels}",
+                            inline=True
+                        )
+
+                    await interaction.followup.send(embed=embed)
+                else:
+                    await interaction.followup.send("Failed to fetch country rankings.", ephemeral=True)
+    
+    
     @Rgroup.command(name="best_daily", description="Display the ranking of who placed the most in one day")
     async def best_daily(self, interaction : discord.Interaction):
         """Fetch and display the top 15 best daily stats in a table format."""
