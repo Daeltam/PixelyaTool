@@ -57,7 +57,7 @@ class Monitor(commands.Cog):
             logging.debug("Embed sent successfully.")
         else:
             logging.warning(f"Failed to send embed: {response.status}")
-        session.close()
+        await session.close()
         
 
     async def check_website_status(self) -> tuple[bool, int]:
@@ -65,7 +65,7 @@ class Monitor(commands.Cog):
             session = aiohttp.ClientSession()
             response = await session.get(self.url_to_check)
             status_code = response.status
-            session.close()
+            await session.close()
             return (status_code == 200), status_code
         except aiohttp.web.HTTPException as e:
             logging.warning(f"Request failed: {e}")
