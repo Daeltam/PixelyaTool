@@ -252,12 +252,9 @@ class RankingCommands(commands.Cog):
                     )
 
                     rankingfactions = data.get('rankingFactions', [])
-                    print(rankingfactions)
                     factions = dict({ rank : {'id' : fac['id'] , 'name' : fac['name'], 'tag' : fac['tag'], 'total_pixels' : fac['tp'], 'daily_pixels' : fac['dp']} for rank, fac in enumerate(rankingfactions)}.items())
-                    print(factions)
                     for entry in factions :
                         if entry < 24:
-                            print("rank = ", entry, "with", factions[entry])
                             name = factions[entry]['name']
                             if len(name) > 20:
                                 name = name[:17] + "..."  
@@ -270,15 +267,13 @@ class RankingCommands(commands.Cog):
                             )
                     return await interaction.followup.send(embed = embed)
                 else:
-                        await print("Failed to fetch rankings.")
+                    return await interaction.followup.send("Failed to fetch rankings.")
 
     @factions.command(name = "top", description="Display the top 15 members of the faction.")
     @app_commands.autocomplete(faction=rps_autocomplete)
     @app_commands.describe(faction="If the faction you want isn't in the list, please contact @daeltam to add it")
     async def factions_top(self, interaction : discord.Interaction, faction : str):
         await interaction.response.defer()
-        # print(faction)
-        # print(type(faction))
         url = 'https://pixelya.fun/api/getfactioninfo'
         payload = {'id': int(faction)}
         async with aiohttp.ClientSession() as session:
@@ -287,7 +282,6 @@ class RankingCommands(commands.Cog):
                 if response.status == 200:
                     result = await response.json()
                     result = result['fac']
-                    print(result['color'])
                     factionURL = "https://pixelya.fun/faction?name=%s"%(urllib.parse.quote(result['name']))
                     embed = discord.Embed(
                         title="Top 15 members of %s"%(result['name']),
@@ -317,14 +311,12 @@ class RankingCommands(commands.Cog):
         "fetch and display the daily total pixels using an embed"
         logging.info(f"Daily stats by {interaction.user}")
         await interaction.response.defer()
-        print("step 1")
         async with aiohttp.ClientSession() as session:
             async with session.get("https://pixelya.fun/ranking") as response:
                 if response.status == 200:
                     data = await response.json()
                     
                     daily_data = data.get("totalDailyPixelsPlaced", [])[0]
-                    print("step 2")
                     if not daily_data:
                         return await interaction.followup.send("No daily rankings found.", ephemeral=True)
                     embed = discord.Embed(
