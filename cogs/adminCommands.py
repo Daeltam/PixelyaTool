@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
+from discord import app_commands
 import datetime
-import asyncio
 import logging
 from typing import Literal, Optional
 import nest_asyncio
@@ -57,7 +57,7 @@ class AdminCommands(commands.Cog):
             else:
                 ret += 1
         await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.")
-    
+
     @commands.command()
     async def slowmode(self, ctx : commands.Context, seconds: int, channel : discord.TextChannel = None) :
         """Changes slowmode, give time in seconds and channel (optional) with the #"""
@@ -85,6 +85,29 @@ class AdminCommands(commands.Cog):
         await channel.edit(slowmode_delay=seconds)
 
         return await ctx.send(f':white_check_mark: Set slowmode to {seconds} seconds')
+    
+
+    @app_commands.command(name = "help", description = "Help command")
+    async def helping(self, interaction : discord.Interaction):
+        logging.info(f"help command by {interaction.user}")
+        await interaction.response.defer()
+        helpInfos = discord.Embed(
+            title="Informations about @Pixelya.fun",
+            description="How to use the Pixelya.fun discord bot, list of all commands and bonus infos",
+            url="https://pixelya.fun",
+            color = discord.Color.from_str("#21d8c9"),
+            timestamp=datetime.datetime.now(datetime.UTC)
+        )
+        helpInfos.add_field(name="Area Download", value = "Download an area of pixelya, use `/area infos` for detailed how-to-use.", inline=False)
+        helpInfos.add_field(name="History Download", value = "Download the history of picelya, use `/history infos` for detailed how-to-use.", inline = False)
+        helpInfos.add_field(name="Webhook request", value = "Add Pixelya Status to your discord, doesn't need the bot for this. Check /webhook infos for detailed how-to-use.", inline=False)
+        helpInfos.add_field(name="Ranking commands", value = "With /ranking total, daily, best_daily, you will be able to access pixelya ranking stats from the discord !", inline = False)
+        helpInfos.add_field(name="Ranking Country commands", value = "With /ranking country daily and total you will be able to access pixelya country stats from the discord !", inline = False)
+        helpInfos.add_field(name="Ranking factions commands", value = "With /ranking faction total and top, you will be able to access pixelya faction stats from the discord !", inline = False)
+        helpInfos.add_field(name="Add the bot to your discord! ", value = "Here is the link : https://discord.com/oauth2/authorize?client_id=1253684567525691483 ! Make sure to DM me in case of any bug, it still has flaws")
+        helpInfos.set_author(name="@Daetlam", url="https://github.com/Daeltam/PixelyaTool",
+                            icon_url="https://media.discordapp.net/attachments/1178076180637818910/1178077857633800192/logopixelya2.png?ex=66d57ec0&is=66d42d40&hm=bcff3bcbb864f0e0a2471f829f7b7fd0fd0562c9b71e6ca11e740fbbfd33fba3&=&format=webp&quality=lossless&width=320&height=320")
+        return await interaction.followup.send(embed=helpInfos)
 
 async def setup(bot):
     await bot.add_cog(AdminCommands(bot))
