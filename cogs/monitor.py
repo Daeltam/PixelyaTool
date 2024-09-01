@@ -33,10 +33,11 @@ class Monitor(commands.Cog):
         await self.send_discord_embed(
             title="Website Status on Startup",
             description=description,
-            color=color
+            color=color,
+            startup = True
         )
 
-    async def send_discord_embed(self, title: str, description: str, color: int) -> None:
+    async def send_discord_embed(self, title: str, description: str, color: int, startup :bool = False ) -> None:
         current_time = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
         embed = {
             "title": title,
@@ -51,13 +52,21 @@ class Monitor(commands.Cog):
             "embeds": [embed]
         }
         session = aiohttp.ClientSession()
-        for url in self.webhook_url :
-            response = await session.post(url, json=data)
-        if response.status == 204:
-            logging.debug("Embed sent successfully.")
-        else:
-            logging.warning(f"Failed to send embed: {response.status}")
-        await session.close()
+        if not startup :
+            for url in self.webhook_url:
+                response = await session.post(url, json=data)
+            if response.status == 204:
+                logging.debug("Embed sent successfully.")
+            else:
+                logging.warning(f"Failed to send embed: {response.status}")
+            await session.close()
+        elif startup:
+            response = await session.post(self.webhook_url[0], json=data)
+            if response.status == 204:
+                logging.debug("Embed sent successfully.")
+            else:
+                logging.warning(f"Failed to send embed: {response.status}")
+            await session.close()
         
 
     async def check_website_status(self) -> tuple[bool, int]:
