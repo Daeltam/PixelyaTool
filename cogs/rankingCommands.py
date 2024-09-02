@@ -101,8 +101,10 @@ class RankingCommands(commands.Cog):
                         total_pixels = str(entry['t']).replace(',', '')
                         daily_total = str(entry['dt']).replace(',', '')
                         urlname = urllib.parse.quote(name)
-                        embed.set_field_at(
-                            index = int(entry['r']),
+                        while len(embed.fields)+1<entry['r']:
+                            embed.add_field(name=f"**{len(embed.fields)}**", value = "This user had a hidden profile so data aren't available.", inline = True)
+                            
+                        embed.add_field(
                             name=f"**{entry['r']}**",
                             value=("""**Name:** [%s %s](https://pixelya.fun/profile?name=%s) \n **ID:** %s\n **Total:** %s\n **Daily:** %s\n"""%(fac_tag, name, urlname, entry['id'], total_pixels, daily_total)),
                             inline=True
