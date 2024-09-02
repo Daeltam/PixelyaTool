@@ -11,7 +11,6 @@ import nest_asyncio, datetime
 import traceback, logging
 import subprocess, platform
 nest_asyncio.apply()
-logging.basicConfig(filename = "historyDownload.log", level = logging.INFO, format = "%(asctime)s:%(levelname)s:%(message)s")
 
 USER_AGENT = "pyf areaDownload 1.0 0 -1_-1 1_1 2024-07-13 2024-07-14"
 PYF_URL = "https://pixelya.fun"
@@ -189,6 +188,8 @@ async def get_area(canvas_id, canvas, x, y, w, h, start_date, end_date, thread, 
 class historyDownload(commands.Cog):
     def __init__(self, bot : commands.Bot) -> None:
         self.bot = bot
+        logging.basicConfig(filename = "historyDownload.log", level = logging.INFO, format = "%(asctime)s:%(levelname)s:%(message)s")
+
 
     @commands.Cog.listener(name="on_ready")
     async def CogLoaded(self) -> None:

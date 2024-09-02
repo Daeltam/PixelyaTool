@@ -6,7 +6,6 @@ import logging
 import datetime
 import traceback
 import WebhookUrl as WHU
-logging.basicConfig(filename = "monitor.log", level = logging.INFO, format = "%(asctime)s:%(levelname)s:%(message)s")
 
 class Monitor(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -14,6 +13,7 @@ class Monitor(commands.Cog):
         self.url_to_check = "http://pixelya.fun"
         self.webhook_url = WHU.urls
         self.was_down = None 
+        logging.basicConfig(filename = "monitor.log", level = logging.INFO, format = "%(asctime)s:%(levelname)s:%(message)s")
 
     @commands.Cog.listener(name="on_ready")
     async def on_ready(self) -> None:

@@ -5,12 +5,13 @@ import datetime
 import logging
 from typing import Literal, Optional
 import nest_asyncio
-logging.basicConfig(filename = "adminCommands.log", level = logging.INFO, format = "%(asctime)s:%(levelname)s:%(message)s")
 nest_asyncio.apply()
 
 class AdminCommands(commands.Cog):
     def __init__(self, bot : commands.Bot) -> None:
         self.bot = bot
+        logging.basicConfig(filename = "adminCommands.log", level = logging.INFO, format = "%(asctime)s:%(levelname)s:%(message)s")
+
 
     @commands.Cog.listener(name="on_ready")
     async def CogLoaded(self) -> None:
