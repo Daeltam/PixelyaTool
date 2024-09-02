@@ -95,9 +95,9 @@ class RankingCommands(commands.Cog):
                         title="Top 10 Total Rankings by Pixels",
                         color=discord.Color.green()
                     )
-                    print(top_15)
                     for rank in range(1,16):
-                        entry = top_15[rank-1]
+                        iteration = 0
+                        entry = top_15[iteration]
                         if int(entry['r']) == rank :
                             name = entry['name']
                             if len(name) > 20:
@@ -115,6 +115,7 @@ class RankingCommands(commands.Cog):
                                 value=("""**Name:** [%s %s](https://pixelya.fun/profile?name=%s) \n **ID:** %s\n **Total:** %s\n **Daily:** %s\n"""%(fac_tag, name, urlname, entry['id'], total_pixels, daily_total)),
                                 inline=True
                             )
+                            iteration+= 1
                         else :
                             embed.add_field(name=f"**{rank}**",
                                             value=("This player has hidden his profile, stats are not available."),
