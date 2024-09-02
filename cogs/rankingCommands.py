@@ -36,7 +36,7 @@ class RankingCommands(commands.Cog):
                         await interaction.followup.send("No daily rankings found.", ephemeral=True)
                         return
 
-                    top_15 = ranking_data[:15]
+                    top_15 = [ entry for entry in ranking_data[:15] if int(entry['dr']) <16]
 
                     embed = discord.Embed(
                         title="Top 15 Daily Rankings by Pixels",
