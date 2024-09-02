@@ -116,7 +116,7 @@ class RankingCommands(commands.Cog):
                                 inline=True
                             )
                         else :
-                            embed.add_field(name=f"**{entry['dr']}**",
+                            embed.add_field(name=f"**{rank}**",
                                             value=("This player has hidden his profile, stats are not available."),
                                             inline=True
                             )
