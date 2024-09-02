@@ -37,37 +37,44 @@ class RankingCommands(commands.Cog):
                         await interaction.followup.send("No daily rankings found.", ephemeral=True)
                         return
 
-                    top_15 = ranking_data[:14]
+                    top_15 = ranking_data[:15]
 
                     embed = discord.Embed(
                         title="Top 15 Daily Rankings by Pixels",
                         color=discord.Color.blue()
                     )
 
-                    for entry in top_15:
-                        name = entry['name']
-                        if len(name) > 20:
-                            name = name[:17] + "..."  
+                    for rank in range(1, 16):
+                        entry = top_15[rank-1]
+                        if int(entry['dr']) == rank :
+                            name = entry['name']
+                            if len(name) > 20:
+                                name = name[:17] + "..."  
 
-                        total_pixels = str(entry['t']).replace(',', '')
-                        daily_total = str(entry['dt']).replace(',', '')
-                        urlname = urllib.parse.quote(name)
-                        if entry['facInfo'] is None :
-                            fac_tag =" "
+                            total_pixels = str(entry['t']).replace(',', '')
+                            daily_total = str(entry['dt']).replace(',', '')
+                            urlname = urllib.parse.quote(name)
+                            if entry['facInfo'] is None :
+                                fac_tag =" "
+                            else :
+                                fac_tag = entry['facInfo'][0]
+                            embed.add_field(name=f"**{entry['dr']}**",
+                                            value=("""**Name:** [%s %s](https://pixelya.fun/profile?name=%s) \n **ID:** %s\n **Total:** %s\n **Daily:** %s\n"""%(fac_tag, name, urlname, entry['id'], total_pixels, daily_total)),
+                                            inline=True
+                            )
                         else :
-                            fac_tag = entry['facInfo'][0]
-                        embed.add_field(name=f"**{entry['dr']}**",
-                                        value=("""**Name:** [%s %s](https://pixelya.fun/profile?name=%s) \n **ID:** %s\n **Total:** %s\n **Daily:** %s\n"""%(fac_tag, name, urlname, entry['id'], total_pixels, daily_total)),
-                                        inline=True
-                        )
+                            embed.add_field(name=f"**{entry['dr']}**",
+                                            value=("This player has hidden his profile, stats are not available."),
+                                            inline=True
+                            )
 
                     await interaction.followup.send(embed=embed)
                 else:
                     await interaction.followup.send("Failed to fetch rankings.", ephemeral=True)
 
-    @rankings.command(name="total", description="Display the top 10 total rankings by pixels.")
+    @rankings.command(name="total", description="Display the top 15 total rankings by pixels.")
     async def total(self, interaction: discord.Interaction):
-        """Fetch and display the top 10 total rankings in a table format."""
+        """Fetch and display the top 15 total rankings in a table format."""
         logging.info(f"{interaction.user} launched /ranking total")
         await interaction.response.defer()
 
@@ -82,30 +89,37 @@ class RankingCommands(commands.Cog):
                         await interaction.followup.send("No total rankings found.", ephemeral=True)
                         return
 
-                    top_10 = ranking_data[:10]
+                    top_15 = ranking_data[:15]
 
                     embed = discord.Embed(
                         title="Top 10 Total Rankings by Pixels",
                         color=discord.Color.green()
                     )
 
-                    for entry in top_10:
-                        name = entry['name']
-                        if len(name) > 20:
-                            name = name[:17] + "..."  
+                    for rank in range(1,16):
+                        entry = top_15[rank-1]
+                        if int(entry['r']) == rank :
+                            name = entry['name']
+                            if len(name) > 20:
+                                name = name[:17] + "..."  
 
-                        if entry['facInfo'] is None :
-                            fac_tag =" "
+                            if entry['facInfo'] is None :
+                                fac_tag =" "
+                            else :
+                                fac_tag = entry['facInfo'][0]
+                            total_pixels = str(entry['t']).replace(',', '')
+                            daily_total = str(entry['dt']).replace(',', '')
+                            urlname = urllib.parse.quote(name)
+                            embed.add_field(
+                                name=f"**{entry['r']}**",
+                                value=("""**Name:** [%s %s](https://pixelya.fun/profile?name=%s) \n **ID:** %s\n **Total:** %s\n **Daily:** %s\n"""%(fac_tag, name, urlname, entry['id'], total_pixels, daily_total)),
+                                inline=True
+                            )
                         else :
-                            fac_tag = entry['facInfo'][0]
-                        total_pixels = str(entry['t']).replace(',', '')
-                        daily_total = str(entry['dt']).replace(',', '')
-                        urlname = urllib.parse.quote(name)
-                        embed.add_field(
-                            name=f"**{entry['r']}**",
-                            value=("""**Name:** [%s %s](https://pixelya.fun/profile?name=%s) \n **ID:** %s\n **Total:** %s\n **Daily:** %s\n"""%(fac_tag, name, urlname, entry['id'], total_pixels, daily_total)),
-                            inline=True
-                        )
+                            embed.add_field(name=f"**{entry['dr']}**",
+                                            value=("This player has hidden his profile, stats are not available."),
+                                            inline=True
+                            )
 
                     await interaction.followup.send(embed=embed)
                 else:
