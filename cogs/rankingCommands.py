@@ -101,7 +101,8 @@ class RankingCommands(commands.Cog):
                         total_pixels = str(entry['t']).replace(',', '')
                         daily_total = str(entry['dt']).replace(',', '')
                         urlname = urllib.parse.quote(name)
-                        embed.add_field(
+                        embed.set_field_at(
+                            index = int(entry['r']),
                             name=f"**{entry['r']}**",
                             value=("""**Name:** [%s %s](https://pixelya.fun/profile?name=%s) \n **ID:** %s\n **Total:** %s\n **Daily:** %s\n"""%(fac_tag, name, urlname, entry['id'], total_pixels, daily_total)),
                             inline=True
