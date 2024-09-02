@@ -7,12 +7,11 @@ import urllib.parse
 import datetime
 from operator import itemgetter
 from enum import Enum
-logging.basicConfig(filename = "rankingCommands.log", level = logging.INFO, format = "%(asctime)s:%(levelname)s:%(message)s")
-
 
 class RankingCommands(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        logging.basicConfig(filename = "rankingCommands.log", level = logging.INFO, format = "%(asctime)s:%(levelname)s:%(message)s")
 
     @commands.Cog.listener(name="on_ready")
     async def CogLoaded(self) -> None:
@@ -57,9 +56,9 @@ class RankingCommands(commands.Cog):
                         else :
                             fac_tag = entry['facInfo'][0]
 
-                        while len(embed.fields)+1<entry['r']:
+                        while len(embed.fields)+1<entry['dr']:
                             embed.add_field(name=f"**{len(embed.fields)}**", value = "This user had a hidden profile so data aren't available.", inline = True)
-                            
+
                         embed.add_field(name=f"**{entry['dr']}**",
                                         value=("""**Name:** [%s %s](https://pixelya.fun/profile?name=%s) \n **ID:** %s\n **Total:** %s\n **Daily:** %s\n"""%(fac_tag, name, urlname, entry['id'], total_pixels, daily_total)),
                                         inline=True
