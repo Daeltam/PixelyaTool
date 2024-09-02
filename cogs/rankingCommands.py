@@ -97,7 +97,7 @@ class RankingCommands(commands.Cog):
                     )
                     post_created = 0
                     for entry in top_15 :
-                        while entry['r'] < post_created -1 :
+                        while entry['r'] > post_created -1 :
                             embed.add_field(name=f"**{post_created}**",
                                             value=("This player has hidden his profile, stats are not available."),
                                             inline=True)
