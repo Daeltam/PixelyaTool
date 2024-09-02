@@ -56,7 +56,7 @@ class RankingCommands(commands.Cog):
                         else :
                             fac_tag = entry['facInfo'][0]
 
-                        while len(embed.fields)+1<entry['dr']:
+                        while len(embed.fields)<entry['dr']:
                             embed.add_field(name=f"**{len(embed.fields)}**", value = "This user had a hidden profile so data aren't available.", inline = True)
 
                         embed.add_field(name=f"**{entry['dr']}**",
@@ -104,7 +104,7 @@ class RankingCommands(commands.Cog):
                         total_pixels = str(entry['t']).replace(',', '')
                         daily_total = str(entry['dt']).replace(',', '')
                         urlname = urllib.parse.quote(name)
-                        while len(embed.fields)+1<entry['r']:
+                        while len(embed.fields)<entry['r']:
                             embed.add_field(name=f"**{len(embed.fields)}**", value = "This user had a hidden profile so data aren't available.", inline = True)
 
                         embed.add_field(
