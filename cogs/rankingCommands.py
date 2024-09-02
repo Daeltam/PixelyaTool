@@ -56,6 +56,10 @@ class RankingCommands(commands.Cog):
                             fac_tag =" "
                         else :
                             fac_tag = entry['facInfo'][0]
+
+                        while len(embed.fields)+1<entry['r']:
+                            embed.add_field(name=f"**{len(embed.fields)}**", value = "This user had a hidden profile so data aren't available.", inline = True)
+                            
                         embed.add_field(name=f"**{entry['dr']}**",
                                         value=("""**Name:** [%s %s](https://pixelya.fun/profile?name=%s) \n **ID:** %s\n **Total:** %s\n **Daily:** %s\n"""%(fac_tag, name, urlname, entry['id'], total_pixels, daily_total)),
                                         inline=True
@@ -103,7 +107,7 @@ class RankingCommands(commands.Cog):
                         urlname = urllib.parse.quote(name)
                         while len(embed.fields)+1<entry['r']:
                             embed.add_field(name=f"**{len(embed.fields)}**", value = "This user had a hidden profile so data aren't available.", inline = True)
-                            
+
                         embed.add_field(
                             name=f"**{entry['r']}**",
                             value=("""**Name:** [%s %s](https://pixelya.fun/profile?name=%s) \n **ID:** %s\n **Total:** %s\n **Daily:** %s\n"""%(fac_tag, name, urlname, entry['id'], total_pixels, daily_total)),
