@@ -2,4 +2,5 @@ notes.txt
 logs.txt
 Token.py
 WebhookUrl.py
+*.log
 __pycache__/
