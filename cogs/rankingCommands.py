@@ -95,7 +95,7 @@ class RankingCommands(commands.Cog):
                         title="Top 10 Total Rankings by Pixels",
                         color=discord.Color.green()
                     )
-
+                    print(top_15)
                     for rank in range(1,16):
                         entry = top_15[rank-1]
                         if int(entry['r']) == rank :
