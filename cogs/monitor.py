@@ -10,7 +10,7 @@ import WebhookUrl as WHU
 class Monitor(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.url_to_check = "http://pixelya.fun"
+        self.url_to_check = "https://pixelya.fun"
         self.webhook_url = WHU.urls
         self.was_down = None 
         logging.basicConfig(filename = "monitor.log", level = logging.INFO, format = "%(asctime)s:%(levelname)s:%(message)s")
@@ -24,7 +24,7 @@ class Monitor(commands.Cog):
     async def send_initial_status(self) -> None:
         is_up, status = await self.check_website_status()
         if is_up:
-            description = "The website http://pixelya.fun is currently up."
+            description = "The website https://pixelya.fun is currently up."
             color = 3066993  
         else:
             description = f"The website is currently down. Error code: {status}"
@@ -42,7 +42,7 @@ class Monitor(commands.Cog):
         embed = {
             "title": title,
             "description": description,
-            "url" : "http://pixelya.fun",
+            "url" : "https://pixelya.fun",
             "color": color,
             "footer": {
                 "text": f"Checked at {current_time}"
@@ -87,7 +87,7 @@ class Monitor(commands.Cog):
         if is_up and self.was_down:
             await self.send_discord_embed(
                 title="Website Up",
-                description="The website http://pixelya.fun is back up.",
+                description="The website https://pixelya.fun is back up.",
                 color=3066993  
             )
             self.was_down = False
