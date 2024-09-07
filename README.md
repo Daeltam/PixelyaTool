@@ -1,5 +1,5 @@
 # PixelyaTool
-Create a discord.py bot to help users with the www.pixelya.fun website.
+Create a discord.py bot to help users with the [pixelya.fun](https://www.pixelya.fun) website.
 
 Contains : 
 - A /area download tool that downloads the map
