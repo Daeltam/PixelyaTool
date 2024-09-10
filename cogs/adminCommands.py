@@ -87,6 +87,20 @@ class AdminCommands(commands.Cog):
 
         return await ctx.send(f':white_check_mark: Set slowmode to {seconds} seconds')
     
+    @app_commands.describe(role_tag = "The tag between [] that you have in the faction name, case insensitive. (Exemple : void)")
+    @app_commands.command(name = "add_to_my_faction", description="Adds a discord member do your discord faction")
+    async def add_faction(self, interaction : discord.Interaction, member : discord.Member, role_tag : str):
+        roles = interaction.user.roles
+        factionLeader = discord.utils.get(interaction.guild.roles, id = 1259269181065662625)
+        if factionLeader not in roles:
+            return await interaction.response.send_message("You need to be the Faction Leader to give the role to someone") 
+        try :
+            facrole = [ role for role in roles if role.name.lower().startswith(f"[{role_tag.lower()}]")][0]
+        except IndexError:
+            return await interaction.response.send_message("<a:error40:1267490066125819907> The tag you have given does not correspond to any faction you're in, please try again")
+        await member.add_roles(facrole)
+        return await interaction.response.send_message(f"{member.mention}, you have recieved the role {facrole.name} by your faction leader {interaction.user} !")
+
 
     @app_commands.command(name = "help", description = "Help command")
     async def helping(self, interaction : discord.Interaction):
