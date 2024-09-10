@@ -17,7 +17,7 @@ class Monitor(commands.Cog):
 
     @commands.Cog.listener(name="on_ready")
     async def on_ready(self) -> None:
-        print("Monitor Cog loaded")
+        logging.info("Monitor Cog loaded")
         await self.send_initial_status()
         await self.check_website.start()
 
