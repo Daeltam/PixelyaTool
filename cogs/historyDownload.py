@@ -270,7 +270,7 @@ class historyDownload(commands.Cog):
             return await interaction.edit_original_response(content = "Video file is not available yet, only gif and frame format. Sorry for the inconvenience")
 
         thread : discord.Thread
-        if privacy.value == 1 :
+        if privacy == 1 :
             thread = await interaction.channel.create_thread(
                 name = f"{interaction.user.name}'s History download on {datetime.date.today()}",
                 auto_archive_duration=10080,
@@ -278,7 +278,7 @@ class historyDownload(commands.Cog):
                 reason = f"{interaction.user}'s history file",
                 type=discord.ChannelType.public_thread,
                 invitable=True)
-        elif privacy.value == 0 : # * Default value
+        elif privacy == 0 : # * Default value
             thread = await interaction.channel.create_thread(
                 name = f"{interaction.user.name}'s History download on {datetime.date.today()}",
                 auto_archive_duration=10080,
