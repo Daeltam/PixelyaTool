@@ -303,6 +303,8 @@ class historyDownload(commands.Cog):
                     end_date = datetime.date.fromisoformat(end_date)
                 if end_date < start_date:
                     return await interaction.edit_original_response(content = "your end date is prior to your start date, this won't work.")
+                elif end_date > datetime.date.today():
+                    return await interaction.edit_original_response(content = "You cannot download an image that hasn't been created yet, please don't try to time travel with my poor bot.")
             except :
                 error_message= "<a:error40:1267490066125819907> Your date format is wrong and created an error, please make sure to use the YYYY-MM-DD format."
                 return await interaction.edit_original_response(content = error_message)
