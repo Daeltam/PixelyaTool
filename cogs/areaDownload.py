@@ -7,10 +7,10 @@ import sys, os, io, math
 import asyncio
 import traceback
 import aiohttp
-import nest_asyncio, datetime
+import datetime
 import logging
 from enum import Enum
-nest_asyncio.apply()
+
 
 USER_AGENT = "pyf areaDownload 1.0 0 -1_-1 1_1"
 PYF_URL = "https://pixelya.fun"

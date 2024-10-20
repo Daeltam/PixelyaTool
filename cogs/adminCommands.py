@@ -4,8 +4,6 @@ from discord import app_commands
 import datetime
 import logging
 from typing import Literal, Optional
-import nest_asyncio
-nest_asyncio.apply()
 
 class AdminCommands(commands.Cog):
     def __init__(self, bot : commands.Bot) -> None:

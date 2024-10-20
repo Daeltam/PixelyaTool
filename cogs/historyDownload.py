@@ -7,10 +7,10 @@ import PIL.Image
 import sys, io, os
 import datetime
 import asyncio, aiohttp
-import nest_asyncio, datetime
+import datetime
 import traceback, logging
 import subprocess, platform
-nest_asyncio.apply()
+
 
 USER_AGENT = "pyf areaDownload 1.0 0 -1_-1 1_1 2024-07-13 2024-07-14"
 PYF_URL = "https://pixelya.fun"
