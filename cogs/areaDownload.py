@@ -134,7 +134,7 @@ async def fetch(session, canvas_id, canvasoffset, ix, iy, target_matrix):
             await asyncio.sleep(3)
             pass
 
-async def get_area(canvas_id, canvas, x, y, w, h, interaction : discord.Interaction):
+async def get_area(canvas_id, canvas, x, y, w, h, interaction : discord.Interaction = None):
     target_matrix = Matrix()
     target_matrix.add_coords(x, y, w, h)
     canvasoffset = math.pow(canvas['size'], 0.5)
@@ -154,7 +154,8 @@ async def get_area(canvas_id, canvas, x, y, w, h, interaction : discord.Interact
                 rank += 1
                 percentage = (rank/total)*100
                 percentageBar = "".join([':green_square:' for k in range(round(percentage/5))]+[':brown_square:' for k in range(20-round(percentage/5))])
-                await interaction.edit_original_response(content = f"<a:loading:1267469203103940673> Image processing {percentageBar}")
+                if interaction is not None :
+                    await interaction.edit_original_response(content = f"<a:loading:1267469203103940673> Image processing {percentageBar}")
         await asyncio.gather(*tasks)
         return target_matrix
 
@@ -209,6 +210,41 @@ class areaDownload(commands.Cog):
     @commands.Cog.listener(name="on_ready")
     async def CogLoaded(self) -> None:
         return logging.info("areaDownload Cog loaded")
+    
+    @commands.Cog.listener()
+    async def on_message(self, message : discord.Message):
+        if not message.author.bot :
+            if "pixelya.fun/#" in message.content :
+                async with message.channel.typing() :
+                    url, x, y, zoom = message.content.split(",")
+                    url, world = url.split("#")
+                    x_start , y_start = int(x) - 500 , int(y) - 500
+                    x_end, y_end = int(x) + 500, int(y) + 500
+                    startx_starty = str(x_start) + "_" + str(y_start)
+                    endx_endy = str(x_end) +"_" + str(y_end)
+
+                    code_canvas_id = {"w" : "0", "g" : "1", "f" : "2", "d" : "5", "t" : "6"}
+                    canvas_id = code_canvas_id[world]
+                    apime = await fetchMe()
+                    # * print(apime['canvases'])
+                    canvas_infos = apime['canvases'][canvas_id]
+                    parseCoords = validateCoorRange(startx_starty, endx_endy, canvas_infos['size'])
+                    if (type(parseCoords) is str):
+                        logging.warning(parseCoords, startx_starty, endx_endy)
+                        return # ! an error occured
+
+                    else:
+                        x, y, w, h = parseCoords
+                        w = w - x + 1
+                        h = h - y + 1
+                    OwnEnumColor.getColors(canvas_infos)
+                    matrix = await get_area(canvas_id, canvas_infos, x, y, w, h)
+                    image = await matrix.create_image()
+
+                    embed = discord.Embed(color = discord.Color.random())
+                    embed.set_image(url="attachment://preview.png")
+                await message.reply(file = discord.File(fp=image, filename = "preview.png"),embed = embed, mention_author=False)
+
     
     group = app_commands.Group(name="area", description="Area Download related commands")
 
