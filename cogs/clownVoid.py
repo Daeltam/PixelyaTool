@@ -49,18 +49,21 @@ class clownVoid(commands.Cog):
     group = app_commands.Group(name = "clown_void", description = "Gives yourself the @clownVoid-ping role (or removes it)")
     @group.command(name ="role")
     async def give_remove_role(self, interaction : discord.Interaction):
-        try :
-            member = await interaction.guild.fetch_member(int(interaction.author.id))
-            if "clownVoid-ping" in interaction.user.roles :
-                self.bot.add
-                member.remove_role("clownVoid-ping")
-                return await interaction.response.send_message("You have now the @clownVoid-ping role ! ", ephemeral=True)
-            else :
-                member.give_role("clownVoid-ping")
-                return await interaction.response.send_message("You have removed the @clownVoid-ping role ! ", ephemeral=True)
-        except Exception :
-            logging.warning(traceback.print_exc())
-            return await interaction.response.send_message("An error occured, I'm sorry")
+        if interaction.guild_id != 1160702908552204288 :
+            return await interaction.response.send_message("This command is only available in the official pixelya discord", ephemeral=True)
+        else :
+            try :
+                member = await interaction.guild.fetch_member(int(interaction.user.id))
+                if "clownVoid-ping" in interaction.user.roles :
+                    self.bot.add
+                    member.remove_role("clownVoid-ping")
+                    return await interaction.response.send_message("You have now the @clownVoid-ping role ! ", ephemeral=True)
+                else :
+                    member.give_role("clownVoid-ping")
+                    return await interaction.response.send_message("You have removed the @clownVoid-ping role ! ", ephemeral=True)
+            except Exception :
+                logging.warning(traceback.print_exc())
+                return await interaction.response.send_message("An error occured, I'm sorry", ephemeral=True)
 
     # * Make something similar to the pixelya status api
     async def check_void_status(self):
