@@ -6,6 +6,7 @@ Contains :
 - a /history download tool that makes you able to download the history of the website
 - /rankings commands making you able to access stats directly from your server
 - /webhook commands to add a status update webhook to your server and monitor pixelya's ups and down
+- Preview of pixelya links in chat (Vasco-de-Gama like)
 
 
 Incoming features :
