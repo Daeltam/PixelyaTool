@@ -124,5 +124,37 @@ class AdminCommands(commands.Cog):
                             icon_url="https://media.discordapp.net/attachments/1178076180637818910/1178077857633800192/logopixelya2.png?ex=66d57ec0&is=66d42d40&hm=bcff3bcbb864f0e0a2471f829f7b7fd0fd0562c9b71e6ca11e740fbbfd33fba3&=&format=webp&quality=lossless&width=320&height=320")
         return await interaction.followup.send(embed=helpInfos)
 
+    @app_commands.command(name = "about", description = "about the bot")
+    async def about_me(self, interaction : discord.Interaction):
+        logging.info(f"about me command by {interaction.user}")
+        await interaction.response.defer()
+        aboutInfos = discord.Embed(
+            title="Informations about @Pixelya.fun",
+            description="About me",
+            url="https://pixelya.fun",
+            color = discord.Color.from_str("#21d8c9"),
+            timestamp=datetime.datetime.now(datetime.UTC),
+        )
+        aboutInfos.add_field(name = "Stats :", value=f"I'm in {len(self.bot.guilds)} servers for now !")
+        aboutInfos.add_field(name="Terms of service", value = "[Click here !](https://daeltam.github.io/PixelyaTool/terms-of-service.html)]", inline=False)
+        aboutInfos.add_field(name="Privacy Policy", value = "[Click here !](https://daeltam.github.io/PixelyaTool/Privacy-Policy.html)", inline = True)
+        aboutInfos.add_field(
+            name="Add the bot to your discord! ",
+            value = "Here is the link : [Add Me](https://discord.com/oauth2/authorize?client_id=1253684567525691483) ! Make sure to DM me in case of any bug, it still has flaws",
+            inline=False)
+        aboutInfos.set_author(name="@Daetlam", url="https://github.com/Daeltam/PixelyaTool",
+                            icon_url="https://media.discordapp.net/attachments/1178076180637818910/1178077857633800192/logopixelya2.png?ex=66d57ec0&is=66d42d40&hm=bcff3bcbb864f0e0a2471f829f7b7fd0fd0562c9b71e6ca11e740fbbfd33fba3&=&format=webp&quality=lossless&width=320&height=320")
+        aboutInfos.set_image(url="https://pixelya.fun/PixelyaLOGO.png")
+        return await interaction.followup.send(embed=aboutInfos)
+
+
+
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        for channel in guild.text_channels:
+            if channel.permissions_for(self.guild.me).send_messages:
+                await channel.send(f'Hey there! Thanks for adding me here ! Don\'n forget to do /about or /help to have more rules and informations about my commands. Have a good tuime playing Pixelya !')
+                break
+
 async def setup(bot):
     await bot.add_cog(AdminCommands(bot))
