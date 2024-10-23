@@ -56,10 +56,10 @@ class clownVoid(commands.Cog):
                 member = await interaction.guild.fetch_member(int(interaction.user.id))
                 if "clownVoid-ping" in interaction.user.roles :
                     self.bot.add
-                    member.remove_roles("clownVoid-ping")
+                    await member.remove_roles("clownVoid-ping")
                     return await interaction.response.send_message("You have now the @clownVoid-ping role ! ", ephemeral=True)
                 else :
-                    member.add_roles("clownVoid-ping")
+                    await member.add_roles("clownVoid-ping")
                     return await interaction.response.send_message("You have removed the @clownVoid-ping role ! ", ephemeral=True)
             except Exception :
                 logging.warning(traceback.print_exc())
