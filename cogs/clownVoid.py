@@ -55,9 +55,9 @@ class clownVoid(commands.Cog):
             try :
                 if interaction.user.get_role(1293447212147408967):
                     await interaction.user.remove_roles(interaction.guild.get_role(1293447212147408967))
-                    return await interaction.response.send_message("You have now the @clownVoid-ping role ! ", ephemeral=True)
+                    return await interaction.response.send_message("You have removed the @clownVoid-ping role ! ", ephemeral=True)
                 await interaction.user.add_roles(interaction.guild.get_role(1293447212147408967))
-                return await interaction.response.send_message("You have removed the @clownVoid-ping role ! ", ephemeral=True)
+                return await interaction.response.send_message("You have now the @clownVoid-ping role ! ", ephemeral=True)
             except Exception :
                 logging.warning(traceback.print_exc())
                 return await interaction.response.send_message("An error occured, I'm sorry", ephemeral=True)
