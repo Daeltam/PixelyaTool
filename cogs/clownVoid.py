@@ -49,12 +49,18 @@ class clownVoid(commands.Cog):
     group = app_commands.Group(name = "clown_void", description = "Gives yourself the @clownVoid-ping role (or removes it)")
     @group.command(name ="role")
     async def give_remove_role(self, interaction : discord.Interaction):
-        if "clownVoid-ping" in interaction.user.roles :
-            interaction.user.remove_role("clownVoid-ping")
-            return await interaction.response.send_message("You have now the @clownVoid-ping role ! ", ephemeral=True)
-        else :
-            interaction.user.give_role("clownVoid-ping")
-            return await interaction.response.send_message("You have removed the @clownVoid-ping role ! ", ephemeral=True)
+        try :
+            member = await interaction.guild.fetch_member(int(interaction.author.id))
+            if "clownVoid-ping" in interaction.user.roles :
+                self.bot.add
+                member.remove_role("clownVoid-ping")
+                return await interaction.response.send_message("You have now the @clownVoid-ping role ! ", ephemeral=True)
+            else :
+                member.give_role("clownVoid-ping")
+                return await interaction.response.send_message("You have removed the @clownVoid-ping role ! ", ephemeral=True)
+        except Exception :
+            logging.warning(traceback.print_exc())
+            return await interaction.response.send_message("An error occured, I'm sorry")
 
     # * Make something similar to the pixelya status api
     async def check_void_status(self):
