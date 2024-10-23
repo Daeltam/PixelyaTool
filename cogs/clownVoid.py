@@ -54,7 +54,6 @@ class clownVoid(commands.Cog):
         else :
             try :
                 if interaction.user.get_role(1293447212147408967):
-                    self.bot.add
                     await interaction.user.remove_roles(interaction.guild.get_role(1293447212147408967))
                     return await interaction.response.send_message("You have now the @clownVoid-ping role ! ", ephemeral=True)
                 await interaction.user.add_roles(interaction.guild.get_role(1293447212147408967))
