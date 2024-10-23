@@ -47,7 +47,7 @@ class clownVoid(commands.Cog):
             message.answer(void_status, mention=False)
 
     group = app_commands.Group(name = "clown_void", description = "Gives yourself the @clownVoid-ping role (or removes it)")
-    @group.command(name ="role")
+    @group.command(name ="role", description="Gives or removes the @clownVoid-ping role.")
     async def give_remove_role(self, interaction : discord.Interaction):
         if interaction.guild_id != 1160702908552204288 :
             return await interaction.response.send_message("This command is only available in the official pixelya discord", ephemeral=True)
@@ -56,10 +56,10 @@ class clownVoid(commands.Cog):
                 member = await interaction.guild.fetch_member(int(interaction.user.id))
                 if "clownVoid-ping" in interaction.user.roles :
                     self.bot.add
-                    member.remove_role("clownVoid-ping")
+                    member.remove_roles("clownVoid-ping")
                     return await interaction.response.send_message("You have now the @clownVoid-ping role ! ", ephemeral=True)
                 else :
-                    member.give_role("clownVoid-ping")
+                    member.add_roles("clownVoid-ping")
                     return await interaction.response.send_message("You have removed the @clownVoid-ping role ! ", ephemeral=True)
             except Exception :
                 logging.warning(traceback.print_exc())
