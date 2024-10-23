@@ -47,20 +47,19 @@ class clownVoid(commands.Cog):
             message.answer(void_status, mention=False)
 
     group = app_commands.Group(name = "clown_void", description = "Gives yourself the @clownVoid-ping role (or removes it)")
+    @app_commands.guilds(1160702908552204288)
     @group.command(name ="role", description="Gives or removes the @clownVoid-ping role.")
     async def give_remove_role(self, interaction : discord.Interaction):
         if interaction.guild_id != 1160702908552204288 :
             return await interaction.response.send_message("This command is only available in the official pixelya discord", ephemeral=True)
         else :
             try :
-                member = await interaction.guild.fetch_member(int(interaction.user.id))
-                if interaction.guild.get_role(1293447212147408967) in interaction.user.roles :
+                if interaction.user.get_role(1293447212147408967):
                     self.bot.add
-                    await member.remove_roles(interaction.guild.get_role(1293447212147408967))
+                    await interaction.user.remove_roles(interaction.guild.get_role(1293447212147408967))
                     return await interaction.response.send_message("You have now the @clownVoid-ping role ! ", ephemeral=True)
-                else :
-                    await member.add_roles(interaction.guild.get_role(1293447212147408967))
-                    return await interaction.response.send_message("You have removed the @clownVoid-ping role ! ", ephemeral=True)
+                await interaction.user.add_roles(interaction.guild.get_role(1293447212147408967))
+                return await interaction.response.send_message("You have removed the @clownVoid-ping role ! ", ephemeral=True)
             except Exception :
                 logging.warning(traceback.print_exc())
                 return await interaction.response.send_message("An error occured, I'm sorry", ephemeral=True)
