@@ -47,7 +47,6 @@ class clownVoid(commands.Cog):
             message.answer(void_status, mention=False)
 
     group = app_commands.Group(name = "clown_void", description = "Gives yourself the @clownVoid-ping role (or removes it)")
-    @app_commands.guilds(1160702908552204288)
     @group.command(name ="role", description="Gives or removes the @clownVoid-ping role.")
     async def give_remove_role(self, interaction : discord.Interaction):
         if interaction.guild_id != 1160702908552204288 :
