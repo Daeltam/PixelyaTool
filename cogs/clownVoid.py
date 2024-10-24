@@ -237,7 +237,7 @@ class clownVoid(commands.Cog):
             async with aiohttp.ClientSession() as session :
                 Webhook = discord.Webhook.from_url(self.webhook_url, client= self.bot, session=session)
                 if title == "**CLOWN VOID WARNING**" :
-                    await Webhook.send("<@1298743759915192414>", embed=embed)
+                    await Webhook.send("<@&1293447212147408967>", embed=embed)
                 else :
                     await Webhook.send(embed=embed)
         except Exception:
