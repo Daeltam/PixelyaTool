@@ -30,7 +30,7 @@ async def getStatus():
 class clownVoid(commands.Cog):
     def __init__(self, bot : commands.Bot) -> None:
         self.bot = bot
-        self.webhook_url = WHU.ClownVoidWebhook
+        self.webhook_urls = WHU.ClownVoidWebhook
         self.isVoidAlive = False
         logging.basicConfig(filename = "clownVoid.log", level = logging.INFO, format = "%(asctime)s:%(levelname)s:%(message)s")
 
@@ -234,12 +234,13 @@ class clownVoid(commands.Cog):
             timestamp=current_time    
         )
         try :
-            async with aiohttp.ClientSession() as session :
-                Webhook = discord.Webhook.from_url(self.webhook_url, client= self.bot, session=session)
-                if title == "**CLOWN VOID WARNING**" :
-                    await Webhook.send("<@&1293447212147408967>", embed=embed)
-                else :
-                    await Webhook.send(embed=embed)
+            for webhook_url in self.webhook_urls :
+                async with aiohttp.ClientSession() as session :
+                    Webhook = discord.Webhook.from_url(webhook_url, client= self.bot, session=session)
+                    if title == "**CLOWN VOID WARNING**" :
+                        await Webhook.send(f"<@{self.webhook_urls[webhook_url]}>", embed=embed)
+                    else :
+                        await Webhook.send(embed=embed)
         except Exception:
             print(traceback.print_exc())
 

@@ -111,15 +111,15 @@ class Monitor(commands.Cog):
         )
         embed.add_field(name = "What is a webhook ?", value = "A Webhook is a link that creates a connexion between a discord channel and my bot. You don't need to have the bot in your server to create a webhook, just to share the link and the bot will be able to send messages in the channel. See this tutorial on how to create a discord Webhook, then share me the `Webhook url` with /webhook request", inline = False)
         embed.add_field(name = "Video Tutorial :", value = "https://www.youtube.com/watch?v=fKksxz2Gdnc")
-        embed.add_field(name = "What is the use of this webhook ?", value = "This webhook enables the bot to send to the channel pixelya status warning as you can find in the pixelys status discord, warning players about the state of the website right now. This doesn't add the bot to your discord.")
+        embed.add_field(name = "What are the uses of this webhook ?", value = "This webhook enables the bot to send messages which can be the channel pixelya status warning as you can find in the pixelys status discord, warning players about the state of the website right now, or the void ping status. For the second one you need to give the ID of the role you want to be, by right clicking the role's name and saying copuy ID. This doesn't add the bot to your discord.")
         return await interaction.response.send_message(embed=embed)
 
     @group.command(name = "request", description = "Makes a request for adding the pixelys Status warning to your own server")
-    async def webhook_request(self, interaction : discord.Interaction, url : str):
+    async def webhook_request(self, interaction : discord.Interaction, type : str, url : str, role_id : str = None):
         logging.info(f"{interaction.user} is sending {url}")
         try:
             me  = self.bot.get_user(1094995425326542898)
-            await me.send(f"Webhook Url request by {interaction.user} : `{url}`")
+            await me.send(f"Webhook Url request by {interaction.user} : `{type} : {url}{role_id}`")
         except Exception as e:
             appInfo = await self.bot.application_info()
             print(appInfo.owner.name)
