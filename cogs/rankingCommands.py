@@ -106,9 +106,9 @@ class RankingCommands(commands.Cog):
                             total_pixels = str(entry['t']).replace(',', '')
                             daily_total = str(entry['dt']).replace(',', '')
                             urlname = urllib.parse.quote(name)
-
+                            print(entry)
                             while rank < int(entry['r']):
-                                print(entry['r'], rank)
+                                print("in while loop" ,  rank)
                                 embed.add_field(name=f"**{len(embed.fields)}**", value = "This user had a hidden profile so data aren't available.", inline = True)
                                 rank+= 1
 
