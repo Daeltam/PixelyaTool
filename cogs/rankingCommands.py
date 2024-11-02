@@ -42,8 +42,8 @@ class RankingCommands(commands.Cog):
                         title="Top 15 Daily Rankings by Pixels",
                         color=discord.Color.blue()
                     )
-
                     for entry in top_15:
+                        rank = 1
                         name = entry['name']
                         if len(name) > 20:
                             name = name[:17] + "..."  
@@ -56,15 +56,14 @@ class RankingCommands(commands.Cog):
                         else :
                             fac_tag = entry['facInfo'][0]
 
-                        while len(embed.fields)<entry['dr']:
-                            if len(embed.fields) == 0 :
-                                break
+                        while rank < int(entry['r']) :
                             embed.add_field(name=f"**{len(embed.fields)}**", value = "This user had a hidden profile so data aren't available.", inline = True)
+                            rank += 1
 
                         embed.add_field(name=f"**{entry['dr']}**",
-                                        value=("""**Name:** [%s %s](https://pixelya.fun/profile?name=%s) \n **ID:** %s\n **Total:** %s\n **Daily:** %s\n"""%(fac_tag, name, urlname, entry['id'], total_pixels, daily_total)),
-                                        inline=True
-                        )
+                                            value=("""**Name:** [%s %s](https://pixelya.fun/profile?name=%s) \n **ID:** %s\n **Total:** %s\n **Daily:** %s\n"""%(fac_tag, name, urlname, entry['id'], total_pixels, daily_total)),
+                                            inline=True)
+                        rank += 1
 
                     await interaction.followup.send(embed=embed)
                 else:
@@ -95,6 +94,7 @@ class RankingCommands(commands.Cog):
                     )
 
                     for entry in top_15:
+                        rank = 1
                         name = entry['name']
                         if len(name) > 20:
                             name = name[:17] + "..."  
@@ -106,16 +106,16 @@ class RankingCommands(commands.Cog):
                         total_pixels = str(entry['t']).replace(',', '')
                         daily_total = str(entry['dt']).replace(',', '')
                         urlname = urllib.parse.quote(name)
-                        while len(embed.fields)<entry['r']:
-                            if len(embed.fields) == 0 :
-                                break
+
+                        while rank < int(entry['r']):
                             embed.add_field(name=f"**{len(embed.fields)}**", value = "This user had a hidden profile so data aren't available.", inline = True)
+                            rank+= 1
 
                         embed.add_field(
-                            name=f"**{entry['r']}**",
-                            value=("""**Name:** [%s %s](https://pixelya.fun/profile?name=%s) \n **ID:** %s\n **Total:** %s\n **Daily:** %s\n"""%(fac_tag, name, urlname, entry['id'], total_pixels, daily_total)),
-                            inline=True
-                        )
+                                name=f"**{entry['r']}**",
+                                value=("""**Name:** [%s %s](https://pixelya.fun/profile?name=%s) \n **ID:** %s\n **Total:** %s\n **Daily:** %s\n"""%(fac_tag, name, urlname, entry['id'], total_pixels, daily_total)),
+                                inline=True)
+                        rank += 1
 
                     await interaction.followup.send(embed=embed)
                 else:
