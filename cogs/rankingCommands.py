@@ -77,22 +77,22 @@ class RankingCommands(commands.Cog):
 
         async with aiohttp.ClientSession() as session:
             async with session.get("https://pixelya.fun/ranking") as response:
-                if response.status == 200:
-                    data = await response.json()
+                try :
+                    if response.status == 200:
+                        data = await response.json()
 
-                    ranking_data = data.get("ranking", [])
+                        ranking_data = data.get("ranking", [])
 
-                    if not ranking_data:
-                        await interaction.followup.send("No total rankings found.", ephemeral=True)
-                        return
+                        if not ranking_data:
+                            await interaction.followup.send("No total rankings found.", ephemeral=True)
+                            return
 
-                    top_15 = [ entry for entry in ranking_data[:15] if int(entry['r']) <16]
+                        top_15 = [ entry for entry in ranking_data[:15] if int(entry['r']) <16]
 
-                    embed = discord.Embed(
-                        title="Top 10 Total Rankings by Pixels",
-                        color=discord.Color.green()
-                    )
-                    try :
+                        embed = discord.Embed(
+                            title="Top 10 Total Rankings by Pixels",
+                            color=discord.Color.green()
+                        )
                         rank = 1
                         for entry in top_15:
                             name = entry['name']
@@ -117,11 +117,12 @@ class RankingCommands(commands.Cog):
                                     value=("""**Name:** [%s %s](https://pixelya.fun/profile?name=%s) \n **ID:** %s\n **Total:** %s\n **Daily:** %s\n"""%(fac_tag, name, urlname, entry['id'], total_pixels, daily_total)),
                                     inline=True)
                             rank += 1
-                    except Exception:
-                        print(traceback.print_exc())
-                    await interaction.followup.send(embed=embed)
-                else:
-                    await interaction.followup.send("Failed to fetch rankings.", ephemeral=True)
+
+                        await interaction.followup.send(embed=embed)
+                    else:
+                        await interaction.followup.send("Failed to fetch rankings.", ephemeral=True)
+                except Exception:
+                    print(traceback.print_exc())
 
     @rankings.command(name="best_daily", description="Display the ranking of who placed the most in one day")
     async def best_daily(self, interaction : discord.Interaction):
