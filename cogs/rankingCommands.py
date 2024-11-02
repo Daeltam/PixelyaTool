@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import aiohttp
-import logging
+import logging, traceback
 import urllib.parse
 import datetime
 from operator import itemgetter
@@ -92,31 +92,32 @@ class RankingCommands(commands.Cog):
                         title="Top 10 Total Rankings by Pixels",
                         color=discord.Color.green()
                     )
+                    try :
+                        for entry in top_15:
+                            rank = 1
+                            name = entry['name']
+                            if len(name) > 20:
+                                name = name[:17] + "..."  
 
-                    for entry in top_15:
-                        rank = 1
-                        name = entry['name']
-                        if len(name) > 20:
-                            name = name[:17] + "..."  
+                            if entry['facInfo'] is None :
+                                fac_tag =" "
+                            else :
+                                fac_tag = entry['facInfo'][0]
+                            total_pixels = str(entry['t']).replace(',', '')
+                            daily_total = str(entry['dt']).replace(',', '')
+                            urlname = urllib.parse.quote(name)
 
-                        if entry['facInfo'] is None :
-                            fac_tag =" "
-                        else :
-                            fac_tag = entry['facInfo'][0]
-                        total_pixels = str(entry['t']).replace(',', '')
-                        daily_total = str(entry['dt']).replace(',', '')
-                        urlname = urllib.parse.quote(name)
+                            while rank < int(entry['r']):
+                                embed.add_field(name=f"**{len(embed.fields)}**", value = "This user had a hidden profile so data aren't available.", inline = True)
+                                rank+= 1
 
-                        while rank < int(entry['r']):
-                            embed.add_field(name=f"**{len(embed.fields)}**", value = "This user had a hidden profile so data aren't available.", inline = True)
-                            rank+= 1
-
-                        embed.add_field(
-                                name=f"**{entry['r']}**",
-                                value=("""**Name:** [%s %s](https://pixelya.fun/profile?name=%s) \n **ID:** %s\n **Total:** %s\n **Daily:** %s\n"""%(fac_tag, name, urlname, entry['id'], total_pixels, daily_total)),
-                                inline=True)
-                        rank += 1
-
+                            embed.add_field(
+                                    name=f"**{entry['r']}**",
+                                    value=("""**Name:** [%s %s](https://pixelya.fun/profile?name=%s) \n **ID:** %s\n **Total:** %s\n **Daily:** %s\n"""%(fac_tag, name, urlname, entry['id'], total_pixels, daily_total)),
+                                    inline=True)
+                            rank += 1
+                    except Exception:
+                        print(traceback.print_exc())
                     await interaction.followup.send(embed=embed)
                 else:
                     await interaction.followup.send("Failed to fetch rankings.", ephemeral=True)
