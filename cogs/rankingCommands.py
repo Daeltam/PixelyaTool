@@ -108,6 +108,7 @@ class RankingCommands(commands.Cog):
                             urlname = urllib.parse.quote(name)
 
                             while rank < int(entry['r']):
+                                print(entry['r'], rank)
                                 embed.add_field(name=f"**{len(embed.fields)}**", value = "This user had a hidden profile so data aren't available.", inline = True)
                                 rank+= 1
 
