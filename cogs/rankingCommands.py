@@ -93,8 +93,8 @@ class RankingCommands(commands.Cog):
                         color=discord.Color.green()
                     )
                     try :
+                        rank = 1
                         for entry in top_15:
-                            rank = 1
                             name = entry['name']
                             if len(name) > 20:
                                 name = name[:17] + "..."  
