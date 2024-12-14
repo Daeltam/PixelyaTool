@@ -12,5 +12,8 @@ Contains :
 Incoming features :
 - Discord Void Ping, role addition etc
 
+Legal documents :
+[Privacy Policy](https://daeltam.github.io/PixelyaTool/Privacy-Policy)
+[Terms of Service](https://daeltam.github.io/PixelyaTool/terms-of-service)
 
 [Add me !](https://discord.com/oauth2/authorize?client_id=1253684567525691483&permissions=18136372210768&integration_type=0&scope=bot)
