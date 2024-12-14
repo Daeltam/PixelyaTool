@@ -15,7 +15,7 @@ class Bot(commands.Bot):
         logging.info(f"Logged in as: {self.user}")
         # Load extensions here
         await load()
-bot = Bot(command_prefix=["pyd ", "when "], intents= discord.Intents.all(), activity=discord.Activity(type=discord.ActivityType.listening, name="your commands"))
+bot = Bot(command_prefix=["pyf ", "when "], intents= discord.Intents.all(), activity=discord.Activity(type=discord.ActivityType.listening, name="your commands"))
 
 async def load():
     """Loads the module"""
