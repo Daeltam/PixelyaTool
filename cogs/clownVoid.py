@@ -213,7 +213,7 @@ class clownVoid(commands.Cog):
                 print(nextVoidUTC)
             except Exception :
                 print(traceback.print_exc())
-                return await interaction.response.send("Either the page https://pixelya.fin/void is not working, either there is something wrong with the bot. Please contact @daeltam if you see that the page is working.")
+                return await interaction.response.send_message("Either the page https://pixelya.fun/void is not working, either there is something wrong with the bot. Please contact @daeltam if you see that the page is working.")
             else : 
                 try :
                     self.isVoidAlive = False
