@@ -133,16 +133,16 @@ class clownVoid(commands.Cog):
                 elif voidInfo == "N/A" : # ? Lengh of waiting for next void message ?
                     # * stripe the status into the useful information
                     # * Find the datetime at which the next void will be
-                    nextVoidUTC = datetime.datetime.strptime(status["nextvoidUTC"], "%a, %d %b %Y %H:%M:%S GMT").replace(tzinfo=datetime.timezone.utc)
+                    nextvoid = datetime.datetime.strptime(status["nextvoid"], "%a, %d %b %Y %H:%M:%S GMT").replace(tzinfo=datetime.timezone.utc)
                     now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=datetime.timezone.utc)
-                    if nextVoidUTC < datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=datetime.timezone.utc) :
-                        print(nextVoidUTC, datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=datetime.timezone.utc))
-                        nextVoidUTC = datetime.timedelta(hours=2).seconds
+                    if nextvoid < datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=datetime.timezone.utc) :
+                        print(nextvoid, datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=datetime.timezone.utc))
+                        nextvoid = datetime.timedelta(hours=2).seconds
                     else :
-                        nextVoidUTC = nextVoidUTC - now
-                        nextVoidUTC = nextVoidUTC.seconds
-                    print("Next void is in : ", nextVoidUTC, "\n___________________\n")
-                    if nextVoidUTC >  6600 - 10 :
+                        nextvoid = nextvoid - now
+                        nextvoid = nextvoid.seconds
+                    print("Next void is in : ", nextvoid, "\n___________________\n")
+                    if nextvoid >  6600 - 10 :
                         # ! Only since a few seconds ! (lengh of void ?)
                         await self.post_discord_embed(
                             title="Celebration time is over",
@@ -151,37 +151,37 @@ class clownVoid(commands.Cog):
                         await asyncio.sleep(1800)
                         print("sleeping for 30 minutes")
 
-                    elif 1800<nextVoidUTC<6600-10 :
+                    elif 1800<nextvoid<6600-10 :
                         await self.post_discord_embed(
                             title = "Clown Void Status",
-                            description=f"Next void is in {round(nextVoidUTC/60)} minutes, {nextVoidUTC//60} seconds.",
+                            description=f"Next void is in {round(nextvoid/60)} minutes, {nextvoid//60} seconds.",
                             color = discord.Color.from_rgb(255,215,0))
                         await asyncio.sleep(1800)
                         print("sleeping for 30 minutes")
 
-                    elif 60<nextVoidUTC<1800 :
+                    elif 60<nextvoid<1800 :
                         await self.post_discord_embed(
                             title = "Clown Void Status",
-                            description=f"Next void is in {round(nextVoidUTC/60)} minutes, {nextVoidUTC//60} seconds",
+                            description=f"Next void is in {round(nextvoid/60)} minutes, {nextvoid//60} seconds",
                             color = discord.Color.from_rgb(255,215,0))
-                        await asyncio.sleep(nextVoidUTC - 60)
-                        print(f"\n Sleeping for {nextVoidUTC -60} seconds \n ") # ? problème ici
+                        await asyncio.sleep(nextvoid - 60)
+                        print(f"\n Sleeping for {nextvoid -60} seconds \n ") # ? problème ici
 
-                    elif 11<nextVoidUTC < 60:
+                    elif 11<nextvoid < 60:
                         await self.post_discord_embed(
                             title = "Clown Void Status",
-                            description=f"Next void is in {nextVoidUTC} seconds",
+                            description=f"Next void is in {nextvoid} seconds",
                             color = discord.Color.from_rgb(255,215,0))
                         await asyncio.sleep(10)
                         print("sleeping for 10 seconds before Warning")
 
-                    elif 0<nextVoidUTC < 11:
+                    elif 0<nextvoid < 11:
                         await self.post_discord_embed(
                             title = "**CLOWN VOID WARNING**",
-                            description=f"NEXT VOID IS IN {nextVoidUTC} SECONDS, GET READY TO FIGHT !", 
+                            description=f"NEXT VOID IS IN {nextvoid} SECONDS, GET READY TO FIGHT !", 
                             color = discord.Color.from_rgb(229,00,00)) # ! Get role ID
-                        await asyncio.sleep(nextVoidUTC+2)
-                        print(f"Sleeping for {nextVoidUTC +2} seconds : until start of the fight")
+                        await asyncio.sleep(nextvoid+2)
+                        print(f"Sleeping for {nextvoid +2} seconds : until start of the fight")
 
             except Exception :
                 print(traceback.print_exc())
@@ -209,8 +209,8 @@ class clownVoid(commands.Cog):
         else :
             status = await getStatus()
             try :
-                nextVoidUTC = status['nextvoidUTC']
-                print(nextVoidUTC)
+                nextvoid = status['nextvoid']
+                print(nextvoid)
             except Exception :
                 print(traceback.print_exc())
                 return await interaction.response.send_message("Either the page https://pixelya.fun/void is not working, either there is something wrong with the bot. Please contact @daeltam if you see that the page is working.")
