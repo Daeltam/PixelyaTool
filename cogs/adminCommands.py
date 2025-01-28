@@ -136,7 +136,7 @@ class AdminCommands(commands.Cog):
             timestamp=datetime.datetime.now(datetime.UTC),
         )
         aboutInfos.add_field(name = "Stats :", value=f"I'm in {len(self.bot.guilds)} servers for now !")
-        aboutInfos.add_field(name="Terms of service", value = "[Click here !](https://daeltam.github.io/PixelyaTool/terms-of-service.html)]", inline=False)
+        aboutInfos.add_field(name="Terms of service", value = "[Click here !](https://daeltam.github.io/PixelyaTool/terms-of-service.html)", inline=False)
         aboutInfos.add_field(name="Privacy Policy", value = "[Click here !](https://daeltam.github.io/PixelyaTool/Privacy-Policy.html)", inline = True)
         aboutInfos.add_field(
             name="Add the bot to your discord! ",
