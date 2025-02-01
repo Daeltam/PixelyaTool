@@ -249,9 +249,10 @@ class areaDownload(commands.Cog):
     group = app_commands.Group(name="area", description="Area Download related commands")
 
     canvas = {'Mini World': '0', 'Graffiti': '1', 'Football': '2', 'World': '5', 'Top 15': '6'}
+    @commands.is_owner()
     @group.command(name = "refresh", description = "Refresh canvases options for the commands")  
     async def refreshing_canvas_list(self, interaction : discord.Interaction):
-        if not interaction.user.guild_permissions.administrator :
+        if not interaction.user.id == "1094995425326542898" :
             return await interaction.response.send_message("You do not have the permissions to use this command")
         logging.info(f"{interaction.user} has reloaded the canvas list")
         apime = await fetchMe()
