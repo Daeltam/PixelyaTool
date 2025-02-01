@@ -54,7 +54,7 @@ class Matrix:
             self.height = max(end_y_b, end_y_a) - self.start_y
 
     async def create_image(self, filename = None):
-        img = PIL.Image.new('RGBA', (self.width, self.height), (255, 0, 0, 0))
+        img = PIL.Image.new('RGBA', (self.width, self.height), (255, 173, 233, 230))
         pxls = img.load()
         for x in range(self.width):
             for y in range(self.height):
