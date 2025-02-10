@@ -294,6 +294,7 @@ class RankingCommands(commands.Cog):
                         timestamp=datetime.datetime.now(datetime.UTC)
                     )
                     all_players = result['membersinfo']+result['modsinfo']+result['ownerinfo']
+                    print(all_players, result)
                     playerInfos = sorted(all_players, key=itemgetter(4), reverse = True)[:15]
                     for rank, playerInfo in enumerate(playerInfos):
                         urlname = urllib.parse.quote(playerInfo[1])
