@@ -240,14 +240,7 @@ class RankingCommands(commands.Cog):
                 else:
                     await interaction.followup.send("Failed to fetch country rankings.", ephemeral=True)
     
-    factions = app_commands.Group(name = "factions", description="faction rankings", parent = rankings)
-    factionList = {'Pixelya': '1', 'VoidEP': '3', 'Altaiya': '4', 'HayPF': '6', 'North Federation': '7', 'United States of Ameri': '8', 'Russian National Repub': '9' , 'ITALIA': '10', 'ISLAMIC UNION': '12', 'PCVoid': '13', 'Brazil Operation': '14', 'PIXELARG': '15', 'Chile Pixel': '16', 'France': '17', 'PeruPPF': '20', 'Indonesia': '21', 'GreecePYA': '22', "Gravedona's Empire": '23', 'Ukraine Pixelya': '25', 'HungarYA': '26', 'ISRAEL': '27', 'CIN': '28', 'Romania PYA': '29', 'Grenia.IRG': '30', 'Dardania': '31', 'ECUADOR': '37', 'Christianity': '39', 'UkrPixel': '40', 'Scotland Pixel': '41', '{HUN}HungaryCPN': '42', '! EXC': '47', 'Ural Pixel': '48', 'Georgian pixelya': '53', 'Christian Azerbaijan': '54', 'Abbasid State': '55'} # * create the list of all factions 
-    async def rps_autocomplete(self, interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]] :
-        factionList = {'Pixelya': '1', 'VoidEP': '3', 'Altaiya': '4', 'HayPF': '6', 'North Federation': '7', 'United States of Ameri': '8', 'Russian National Repub': '9' , 'ITALIA': '10', 'ISLAMIC UNION': '12', 'PCVoid': '13', 'Brazil Operation': '14', 'PIXELARG': '15', 'Chile Pixel': '16', 'France': '17', 'PeruPPF': '20', 'Indonesia': '21', 'GreecePYA': '22', "Gravedona's Empire": '23', 'Ukraine Pixelya': '25', 'HungarYA': '26', 'ISRAEL': '27', 'CIN': '28', 'Romania PYA': '29', 'Grenia.IRG': '30', 'Dardania': '31', 'ECUADOR': '37', 'Christianity': '39', 'UkrPixel': '40', 'Scotland Pixel': '41', '{HUN}HungaryCPN': '42', '! EXC': '47', 'Ural Pixel': '48', 'Georgian pixelya': '53', 'Christian Azerbaijan': '54', 'Abbasid State': '55'}
-        factionsList = [app_commands.Choice(name=name, value=ID) for name, ID in factionList.items() if current.lower() in name.lower()][:25]
-        return factionsList
-    factionsEnum = Enum('facs', factionList)
-    
+    factions = app_commands.Group(name = "factions", description="faction rankings", parent = rankings)    
     @factions.command(name = "total", description="Display the top 25 factions all-time")
     async def factions_total(self, interaction : discord.Interaction):
         await interaction.response.defer()
@@ -255,6 +248,7 @@ class RankingCommands(commands.Cog):
             async with session.get("https://pixelya.fun/ranking") as response:
                 if response.status == 200 :
                     data = await response.json()
+                    
 
                     embed = discord.Embed(
                         title="Ranking of top 25 best factions in pixelya",
@@ -278,10 +272,7 @@ class RankingCommands(commands.Cog):
                     return await interaction.followup.send(embed = embed)
                 else:
                     return await interaction.followup.send("Failed to fetch rankings.")
-
     @factions.command(name = "top", description="Display the top 15 members of the faction.")
-    @app_commands.autocomplete(faction=rps_autocomplete)
-    @app_commands.describe(faction="If the faction you want isn't in the list, please contact @daeltam to add it")
     async def factions_top(self, interaction : discord.Interaction, faction : str):
         await interaction.response.defer()
         url = 'https://pixelya.fun/api/getfactioninfo'
@@ -292,6 +283,8 @@ class RankingCommands(commands.Cog):
                 if response.status == 200:
                     result = await response.json()
                     result = result['fac']
+                    if len(result) == 1:
+                        return await interaction.followup.send("The faction name you entered does not fit any of the current existing factions, please try again in a few seconds.")
                     factionURL = "https://pixelya.fun/faction?name=%s"%(urllib.parse.quote(result['name']))
                     embed = discord.Embed(
                         title="Top 15 members of %s"%(result['name']),
@@ -311,9 +304,9 @@ class RankingCommands(commands.Cog):
                         )
                     embed.set_author(name=result['name'], url=factionURL,
                         icon_url=result['avatar'])
-                    await interaction.followup.send(embed=embed)
+                    return await interaction.followup.send(embed=embed)
                 else:
-                    await interaction.followup.send(f"Request failed with status code {response.status}")
+                    return await interaction.followup.send(f"Request failed with status code {response.status}")
    
     stats = app_commands.Group(name="stats", description="Statistics")
     @stats.command(name="daily", description="Shows the total daily pixels placed")
