@@ -276,7 +276,7 @@ class RankingCommands(commands.Cog):
     async def factions_top(self, interaction : discord.Interaction, faction : str):
         await interaction.response.defer()
         url = 'https://pixelya.fun/api/getfactioninfo'
-        payload = {'id': int(faction)}
+        payload = {'id': str(faction)}
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json=payload) as response:
                 # Check if the request was successful
