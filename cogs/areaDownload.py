@@ -293,6 +293,7 @@ class areaDownload(commands.Cog):
     @app_commands.describe(maps = "Map from which you want to download the image",
                            startx_starty = "Top left coordinates in the good format",
                            endx_endy = "Bottom right coordinates in the good format")
+    @app_commands.checks.cooldown(1, 300, key=lambda i: (i.guild_id))
     async def download_area(self, interaction : discord.Interaction, maps : mapsEnum, startx_starty : str, endx_endy : str):
         global USER_AGENT
         USER_AGENT = "pyf areaDownload 1.0 " + maps.value + " " + startx_starty + " " + endx_endy
@@ -329,6 +330,13 @@ class areaDownload(commands.Cog):
             error_message = f"<a:error40:1267490066125819907> Something went wrong, your image will not be delivered, please report a bug in the dedicated thread : {thread.mention}"
             await interaction.edit_original_response(content = error_message)
         return
+    
+    @download_area.error
+    async def on_download_area_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CommandOnCooldown):
+            await interaction.response.send_message(str(error), ephemeral=True)
+        else :
+            raise error
 
 async def setup(bot):
     await bot.add_cog(areaDownload(bot))
