@@ -153,7 +153,7 @@ class AdminCommands(commands.Cog):
     async def on_guild_join(self, guild):
         for channel in guild.text_channels:
             if channel.permissions_for(self.guild.me).send_messages:
-                await channel.send(f'Hey there! Thanks for adding me here ! Don\'n forget to do /about or /help to have more rules and informations about my commands. Have a good tuime playing Pixelya !')
+                await channel.send(f'Hey there! Thanks for adding me here ! Don\'t forget to do /about or /help to have more rules and informations about my commands. Have a good tuime playing Pixelya !')
                 break
 
 async def setup(bot):
