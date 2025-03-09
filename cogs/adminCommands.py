@@ -87,9 +87,8 @@ class AdminCommands(commands.Cog):
     
     @app_commands.describe(role_tag = "The tag between [] that you have in the faction name, case insensitive. (Exemple : void)")
     @app_commands.command(name = "add_to_my_faction", description="Adds a discord member do your discord faction")
+    @app_commands.guilds(1160702908552204288)
     async def add_faction(self, interaction : discord.Interaction, member : discord.Member, role_tag : str):
-        if interaction.guild_id != 1160702908552204288 :
-            return await interaction.response.send_message("This command is restricted to the Pixelya Official Server, you can join it here : https://discord.gg/8vcWt7XGKt")
         roles = interaction.user.roles
         factionLeader = discord.utils.get(interaction.guild.roles, id = 1259269181065662625)
         if factionLeader not in roles:
