@@ -87,9 +87,8 @@ class AdminCommands(commands.Cog):
     
     @app_commands.describe(role_tag = "The tag between [] that you have in the faction name, case insensitive. (Exemple : void)")
     @app_commands.command(name = "add_to_my_faction", description="Adds a discord member do your discord faction")
+    @app_commands.guilds(1160702908552204288)
     async def add_faction(self, interaction : discord.Interaction, member : discord.Member, role_tag : str):
-        if interaction.guild_id != 1160702908552204288 :
-            return await interaction.response.send_message("This command is restricted to the Pixelya Official Server, you can join it here : https://discord.gg/8vcWt7XGKt")
         roles = interaction.user.roles
         factionLeader = discord.utils.get(interaction.guild.roles, id = 1259269181065662625)
         if factionLeader not in roles:
@@ -153,7 +152,7 @@ class AdminCommands(commands.Cog):
     async def on_guild_join(self, guild):
         for channel in guild.text_channels:
             if channel.permissions_for(self.guild.me).send_messages:
-                await channel.send(f'Hey there! Thanks for adding me here ! Don\'n forget to do /about or /help to have more rules and informations about my commands. Have a good tuime playing Pixelya !')
+                await channel.send(f'Hey there! Thanks for adding me here ! Don\'t forget to do /about or /help to have more rules and informations about my commands. Have a good time playing Pixelya !')
                 break
 
 async def setup(bot):
