@@ -174,8 +174,9 @@ class AdminCommands(commands.Cog):
 
     @colorGroup.command(name = "suggesting", description = "This command Suggests a new color to the game owner, there is a 1month cooldown")
     # @colorGroup.checks.cooldown(1, 2592000, key = lambda i: (i.user.id))  # 1 month cooldown in seconds
-    @colorGroup.guilds(1160702908552204288)
+    # @colorGroup.guilds(1160702908552204288)
     async def suggesting(self, interaction : discord.Interaction, hexCode : str):
+        return # ! TEMPORARY
         logging.info(f"suggesting command by {interaction.user}")
         # Validate hex code
         if not re.match(r'^#(?:[0-9a-fA-F]{3}){1,2}$', hexCode):
