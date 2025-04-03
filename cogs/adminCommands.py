@@ -89,7 +89,7 @@ class AdminCommands(commands.Cog):
     
     @app_commands.describe(role_tag = "The tag between [] that you have in the faction name, case insensitive. (Exemple : void)")
     @app_commands.command(name = "add_to_my_faction", description="Adds a discord member do your discord faction")
-    @app_commands.guilds(1160702908552204288)
+    # @app_commands.guilds(1160702908552204288)
     async def add_faction(self, interaction : discord.Interaction, member : discord.Member, role_tag : str):
         roles = interaction.user.roles
         factionLeader = discord.utils.get(interaction.guild.roles, id = 1259269181065662625)
@@ -150,10 +150,11 @@ class AdminCommands(commands.Cog):
     
     colorGroup = app_commands.Group(name="color", description="Colors related commands")
 
-    @colorGroup.command(name = "picker", description = "Try a color")
+    #@colorGroup.command(name = "picker", description = "Try a color")
     # @colorGroup.checks.cooldown(1, 15, key = lambda i: (i.user.id))
-    @colorGroup.guilds(1160702908552204288)
+    #@colorGroup.guilds(1160702908552204288)
     async def about_me(self, interaction : discord.Interaction, hexCode : str):
+        return #! TEMPORARY
         logging.info(f"about me command by {interaction.user}")
         # Validate hex code
         if not re.match(r'^#(?:[0-9a-fA-F]{3}){1,2}$', hexCode):
