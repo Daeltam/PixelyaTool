@@ -151,7 +151,7 @@ class AdminCommands(commands.Cog):
     colorGroup = app_commands.Group(name="color", description="Colors related commands")
 
     @colorGroup.command(name = "picker", description = "Try a color")
-    @colorGroup.checks.cooldown(1, 15, key = lambda i: (i.user.id))
+    # @colorGroup.checks.cooldown(1, 15, key = lambda i: (i.user.id))
     @colorGroup.guilds(1160702908552204288)
     async def about_me(self, interaction : discord.Interaction, hexCode : str):
         logging.info(f"about me command by {interaction.user}")
@@ -173,7 +173,7 @@ class AdminCommands(commands.Cog):
         await interaction.response.send_message(embed=embed, file=file)
 
     @colorGroup.command(name = "suggesting", description = "This command Suggests a new color to the game owner, there is a 1month cooldown")
-    @colorGroup.checks.cooldown(1, 2592000, key = lambda i: (i.user.id))  # 1 month cooldown in seconds
+    # @colorGroup.checks.cooldown(1, 2592000, key = lambda i: (i.user.id))  # 1 month cooldown in seconds
     @colorGroup.guilds(1160702908552204288)
     async def suggesting(self, interaction : discord.Interaction, hexCode : str):
         logging.info(f"suggesting command by {interaction.user}")
