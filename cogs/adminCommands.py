@@ -150,11 +150,10 @@ class AdminCommands(commands.Cog):
     
     colorGroup = app_commands.Group(name="color", description="Colors related commands")
 
-    #@colorGroup.command(name = "picker", description = "Try a color")
-    # @colorGroup.checks.cooldown(1, 15, key = lambda i: (i.user.id))
+    @colorGroup.command(name = "picker", description = "Try a color")
+    @app_commands.checks.cooldown(1, 15, key = lambda i: (i.user.id))
     #@colorGroup.guilds(1160702908552204288)
     async def about_me(self, interaction : discord.Interaction, hexCode : str):
-        return #! TEMPORARY
         logging.info(f"about me command by {interaction.user}")
         # Validate hex code
         if not re.match(r'^#(?:[0-9a-fA-F]{3}){1,2}$', hexCode):
@@ -174,10 +173,9 @@ class AdminCommands(commands.Cog):
         await interaction.response.send_message(embed=embed, file=file)
 
     @colorGroup.command(name = "suggesting", description = "This command Suggests a new color to the game owner, there is a 1month cooldown")
-    # @colorGroup.checks.cooldown(1, 2592000, key = lambda i: (i.user.id))  # 1 month cooldown in seconds
+    @app_commands.checks.cooldown(1, 2592000, key = lambda i: (i.user.id))  # 1 month cooldown in seconds
     # @colorGroup.guilds(1160702908552204288)
     async def suggesting(self, interaction : discord.Interaction, hexCode : str):
-        return # ! TEMPORARY
         logging.info(f"suggesting command by {interaction.user}")
         # Validate hex code
         if not re.match(r'^#(?:[0-9a-fA-F]{3}){1,2}$', hexCode):
@@ -223,4 +221,11 @@ class AdminCommands(commands.Cog):
             await ctx.send("An error occurred while processing the command.", ephemeral=True)
 
 async def setup(bot):
-    await bot.add_cog(AdminCommands(bot))
+    cog = AdminCommands(bot)
+    await bot.add_cog(cog)
+
+    # Restrict the add_faction command to a specific guild
+    GUILD_ID = 1160702908552204288  # Replace with your guild ID
+    bot.tree.add_command(cog.suggesting, guild=discord.Object(id=GUILD_ID))
+    bot.tree.add_command(cog.about_me, guild=discord.Object(id=GUILD_ID))
+    bot.tree.add_command(cog.add_faction, guild=discord.Object(id=GUILD_ID))
